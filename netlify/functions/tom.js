@@ -1,4 +1,4 @@
-import fetch from 'node-fetch';
+const fetch = require('node-fetch');
 
 exports.handler = async (event) => {
   // Handle CORS preflight
@@ -31,12 +31,12 @@ exports.handler = async (event) => {
     }
 
     // Make API request
-    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    const response = await fetch('https://api.openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${apiKey}`,
-        'HTTP-Referer': 'https://blessopher-mission-control.netlify.app/',
+        'HTTP-Referer': 'https://bcmissioncontrol.netlify.app/',
         'X-Title': 'Blessopher Mission Control'
       },
       body: JSON.stringify({
@@ -51,19 +51,12 @@ exports.handler = async (event) => {
       })
     });
 
-    // Handle API errors
     if (!response.ok) {
       const error = await response.text();
       throw new Error(`OpenRouter API error: ${error}`);
     }
 
     const data = await response.json();
-    
-    // Validate response format
-    if (!data.choices?.[0]?.message?.content) {
-      throw new Error('Invalid API response format');
-    }
-
     return {
       statusCode: 200,
       headers: {
@@ -71,8 +64,7 @@ exports.handler = async (event) => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({ 
-        reply: data.choices[0].message.content,
-        version: '1.0.1'
+        reply: data.choices[0].message.content
       })
     };
 
@@ -85,8 +77,7 @@ exports.handler = async (event) => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({ 
-        error: error.message,
-        version: '1.0.1'
+        error: error.message
       })
     };
   }
