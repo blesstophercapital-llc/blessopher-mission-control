@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blessopher Capital — Mission Control</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#F5F5F2;color:#1a1a1a;min-height:100vh}
+.app{display:flex;min-height:100vh}
+.sidebar{width:220px;background:#1a1a1a;flex-shrink:0;display:flex;flex-direction:column;padding:0}
+.sidebar-logo{padding:1.5rem 1.25rem 1rem;border-bottom:1px solid #2a2a2a}
+.sidebar-logo .brand{font-size:14px;font-weight:600;color:#fff;letter-spacing:-0.3px}
+.sidebar-logo .brand span{color:#6BAF6A}
+.sidebar-logo .sub{font-size:11px;color:#666;margin-top:2px}
+.sidebar-nav{flex:1;padding:1rem 0}
+.nav-section{margin-bottom:1.5rem}
+.nav-section-label{font-size:10px;font-weight:600;color:#444;text-transform:uppercase;letter-spacing:0.8px;padding:0 1.25rem;margin-bottom:6px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 1.25rem;font-size:13px;color:#888;cursor:pointer;transition:all 0.15s;border-left:2px solid transparent}
+.nav-item:hover{color:#ccc;background:#222}
+.nav-item.active{color:#fff;background:#252525;border-left-color:#6BAF6A}
+.nav-item .icon{width:16px;height:16px;opacity:0.7;flex-shrink:0}
+.nav-item.active .icon{opacity:1}
+.sidebar-bottom{padding:1rem 1.25rem;border-top:1px solid #2a2a2a}
+.tom-status{display:flex;align-items:center;gap:8px}
+.tom-dot{width:8px;height:8px;border-radius:50%;background:#6BAF6A;flex-shrink:0;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.tom-label{font-size:12px;color:#888}
+.tom-model{font-size:11px;color:#555;margin-top:2px}
+.main{flex:1;overflow:auto}
+.topbar{background:#fff;border-bottom:1px solid #E8E8E4;padding:0 2rem;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
+.page-title{font-size:16px;font-weight:600;color:#1a1a1a}
+.topbar-right{display:flex;align-items:center;gap:12px}
+.date-badge{font-size:12px;color:#888;background:#F5F5F2;padding:4px 10px;border-radius:20px;border:1px solid #E8E8E4}
+.action-btn{font-size:12px;font-weight:500;padding:6px 14px;border-radius:8px;cursor:pointer;border:1px solid #DDD;background:#fff;color:#444;transition:all 0.15s}
+.action-btn:hover{background:#F5F5F2}
+.action-btn.primary{background:#3B5C3A;color:#fff;border-color:#3B5C3A}
+.action-btn.primary:hover{background:#2d4a2c}
+.content{padding:2rem}
+.hidden{display:none}
+.grid-4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:1.5rem}
+.metric{background:#fff;border-radius:10px;padding:1rem 1.25rem;border:1px solid #E8E8E4}
+.metric .lbl{font-size:11px;color:#888;margin-bottom:6px;font-weight:500;text-transform:uppercase;letter-spacing:0.4px}
+.metric .val{font-size:24px;font-weight:600;color:#1a1a1a;line-height:1.2}
+.metric .sub{font-size:12px;color:#aaa;margin-top:4px}
+.metric .val.green{color:#1D9E75}
+.metric .val.amber{color:#BA7517}
+.metric .val.red{color:#E24B4A}
+.metric .val.blue{color:#378ADD}
+.grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:1.5rem}
+.grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:1.5rem}
+.card{background:#fff;border-radius:12px;padding:1.25rem;border:1px solid #E8E8E4}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;padding-bottom:10px;border-bottom:1px solid #F0F0EC}
+.card-title{font-size:12px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:0.5px}
+.card-badge{font-size:11px;font-weight:500;padding:2px 8px;border-radius:20px}
+.cb-green{background:#EAF3DE;color:#27500A}
+.cb-amber{background:#FAEEDA;color:#633806}
+.cb-blue{background:#E6F1FB;color:#0C447C}
+.cb-red{background:#FCEBEB;color:#A32D2D}
+.cb-gray{background:#F1EFE8;color:#5F5E5A}
+.stream-card{background:#fff;border-radius:12px;padding:1.25rem;border:1px solid #E8E8E4;cursor:pointer;transition:all 0.15s}
+.stream-card:hover{border-color:#3B5C3A;transform:translateY(-1px)}
+.stream-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.stream-name{font-size:15px;font-weight:600}
+.stream-amount{font-size:26px;font-weight:600;margin-bottom:4px}
+.stream-freq{font-size:12px;color:#aaa}
+.stream-bar{height:3px;background:#F0F0EC;border-radius:2px;margin-top:14px;overflow:hidden}
+.stream-fill{height:100%;border-radius:2px}
+.info-row{display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:7px 0;border-bottom:1px solid #F5F5F2}
+.info-row:last-child{border-bottom:none}
+.info-lbl{color:#888}
+.info-val{font-weight:500}
+.info-val.g{color:#1D9E75}
+.info-val.a{color:#BA7517}
+.info-val.r{color:#E24B4A}
+.info-val.b{color:#378ADD}
+.task-row{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid #F5F5F2}
+.task-row:last-child{border-bottom:none}
+.tdot{width:8px;height:8px;border-radius:50%;margin-top:5px;flex-shrink:0}
+.td-red{background:#E24B4A}
+.td-green{background:#1D9E75}
+.td-amber{background:#EF9F27}
+.td-blue{background:#378ADD}
+.td-gray{background:#B4B2A9}
+.task-text{font-size:13px;line-height:1.5;color:#1a1a1a}
+.task-due{font-size:11px;color:#aaa;margin-top:2px}
+.badge{display:inline-block;font-size:11px;font-weight:500;padding:3px 9px;border-radius:20px}
+.b-green{background:#EAF3DE;color:#27500A}
+.b-amber{background:#FAEEDA;color:#633806}
+.b-blue{background:#E6F1FB;color:#0C447C}
+.b-red{background:#FCEBEB;color:#A32D2D}
+.b-gray{background:#F1EFE8;color:#5F5E5A}
+.sup-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid #F5F5F2}
+.sup-row:last-child{border-bottom:none}
+.sup-name{font-size:14px;font-weight:500}
+.sup-detail{font-size:12px;color:#aaa;margin-top:2px}
+.price-step{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid #F5F5F2;font-size:13px}
+.price-step:last-child{border-bottom:none}
+.step-week{color:#aaa;width:55px;font-size:12px}
+.step-price{font-weight:500;flex:1;padding:0 8px}
+.step-net{color:#1D9E75;font-size:12px}
+.activity-row{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid #F5F5F2}
+.activity-row:last-child{border-bottom:none}
+.activity-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.ai-green{background:#EAF3DE}
+.ai-amber{background:#FAEEDA}
+.ai-blue{background:#E6F1FB}
+.ai-gray{background:#F1EFE8}
+.activity-text{font-size:13px;line-height:1.5;color:#1a1a1a}
+.activity-time{font-size:11px;color:#aaa;margin-top:2px}
+.cron-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid #F5F5F2;font-size:13px}
+.cron-row:last-child{border-bottom:none}
+.cron-name{font-weight:500}
+.cron-detail{font-size:12px;color:#aaa;margin-top:2px}
+.cron-time{font-size:12px;color:#888;text-align:right}
+.cron-status{font-size:11px;font-weight:500;padding:2px 8px;border-radius:20px;margin-top:2px}
+.doc-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #F5F5F2;cursor:pointer}
+.doc-row:last-child{border-bottom:none}
+.doc-row:hover .doc-name{color:#3B5C3A}
+.doc-name{font-size:13px;font-weight:500;transition:color 0.15s}
+.doc-meta{font-size:11px;color:#aaa;margin-top:2px}
+.doc-type{font-size:11px;font-weight:500;padding:2px 8px;border-radius:20px}
+.kanban{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.kanban-col{background:#F8F8F5;border-radius:12px;padding:1rem}
+.kanban-header{font-size:12px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+.kanban-count{background:#E8E8E4;color:#666;font-size:11px;padding:1px 7px;border-radius:20px;font-weight:500}
+.kanban-card{background:#fff;border-radius:8px;padding:10px 12px;margin-bottom:8px;border:1px solid #E8E8E4;font-size:13px}
+.kanban-card:last-child{margin-bottom:0}
+.kc-title{font-weight:500;margin-bottom:4px;line-height:1.4}
+.kc-meta{font-size:11px;color:#aaa}
+.kc-tag{display:inline-block;font-size:10px;font-weight:500;padding:2px 6px;border-radius:4px;margin-top:6px}
+.tag-green{background:#EAF3DE;color:#27500A}
+.tag-amber{background:#FAEEDA;color:#633806}
+.tag-blue{background:#E6F1FB;color:#0C447C}
+.tag-red{background:#FCEBEB;color:#A32D2D}
+.quick-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:1.5rem}
+.qa-btn{background:#fff;border:1px solid #E8E8E4;border-radius:10px;padding:1rem;cursor:pointer;transition:all 0.15s;text-align:left}
+.qa-btn:hover{border-color:#3B5C3A;background:#FAFFF9}
+.qa-icon{font-size:20px;margin-bottom:8px}
+.qa-title{font-size:13px;font-weight:500;color:#1a1a1a}
+.qa-desc{font-size:11px;color:#aaa;margin-top:3px}
+.section-label{font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin:1.5rem 0 0.75rem}
+.progress-bar{height:6px;background:#F0F0EC;border-radius:3px;margin-top:8px;overflow:hidden}
+.progress-fill{height:100%;border-radius:3px}
+.tom-card{background:#1a1a1a;border-radius:12px;padding:1.25rem;color:#fff;border:1px solid #2a2a2a}
+.tom-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;padding-bottom:10px;border-bottom:1px solid #2a2a2a}
+.tom-card-title{font-size:12px;font-weight:600;color:#666;text-transform:uppercase;letter-spacing:0.5px}
+.tom-info-row{display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:6px 0;border-bottom:1px solid #252525}
+.tom-info-row:last-child{border-bottom:none}
+.tom-lbl{color:#666}
+.tom-val{font-weight:500;color:#ccc}
+.tom-val.on{color:#6BAF6A}
+.divider{height:1px;background:#F0F0EC;margin:1.25rem 0}
+@media(max-width:900px){.sidebar{display:none}.grid-4{grid-template-columns:repeat(2,1fr)}.grid-3{grid-template-columns:1fr}.kanban{grid-template-columns:1fr}.quick-actions{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <div class="brand"><span>Blessopher</span> Capital</div>
+      <div class="sub">Mission Control</div>
+    </div>
+    <div class="sidebar-nav">
+      <div class="nav-section">
+        <div class="nav-section-label">Portfolio</div>
+        <div class="nav-item active" onclick="showPage('overview')">
+          <svg class="icon" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+          Overview
+        </div>
+        <div class="nav-item" onclick="showPage('jnj')">
+          <svg class="icon" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a7 7 0 100 14A7 7 0 008 1zm0 2a5 5 0 110 10A5 5 0 018 3zm0 2a1 1 0 00-1 1v2.586l-1.707 1.707a1 1 0 001.414 1.414L8.707 9.707A1 1 0 009 9V8a1 1 0 00-1-1z"/></svg>
+          J&J W2
+        </div>
+        <div class="nav-item" onclick="showPage('solar')">
+          <svg class="icon" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="3"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.41 1.41M11.54 11.54l1.41 1.41M3.05 12.95l1.41-1.41M11.54 4.46l1.41-1.41" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          Solar
+        </div>
+        <div class="nav-item" onclick="showPage('ecom')">
+          <svg class="icon" viewBox="0 0 16 16" fill="currentColor"><path d="M1 1h2l2.4 7.4a1 1 0 00.95.6h6.3a1 1 0 00.95-.68l1.4-4.32H4M6 13a1 1 0 102 0 1 1 0 00-2 0M11 13a1 1 0 102 0 1 1 0 00-2 0"/></svg>
+          BioWonder
+        </div>
+        <div class="nav-item" onclick="showPage('capital')">
+          <svg class="icon" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1L1 5v2h14V5L8 1zM2 8v5h3V8H2zM7 8v5h2V8H7zM11 8v5h3V8h-3zM1 14h14v1H1z"/></svg>
+          Capital plan
+        </div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-label">Operations</div>
+        <div class="nav-item" onclick="showPage('tasks')">
+          <svg class="icon" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="1" width="14" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M4 8l3 3 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+          Task board
+        </div>
+        <div class="nav-item" onclick="showPage('docs')">
+          <svg class="icon" viewBox="0 0 16 16" fill="currentColor"><path d="M4 1h6l4 4v10H2V1h2zm5 0v4h4M5 7h6M5 9h6M5 11h4"/></svg>
+          Docs
+        </div>
+        <div class="nav-item" onclick="showPage('schedule')">
+          <svg class="icon" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="3" width="14" height="12" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M5 1v4M11 1v4M1 7h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          Schedule
+        </div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-label">Agents</div>
+        <div class="nav-item" onclick="showPage('tom')">
+          <svg class="icon" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3.31 2.69-6 6-6s6 2.69 6 6"/></svg>
+          Tom
+        </div>
+      </div>
+    </div>
+    <div class="sidebar-bottom">
+      <div class="tom-status">
+        <div class="tom-dot"></div>
+        <div>
+          <div class="tom-label">Tom · Online</div>
+          <div class="tom-model">Sonnet 4.6 · OpenRouter</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="page-title" id="page-title">Overview</div>
+      <div class="topbar-right">
+        <div class="date-badge" id="ds"></div>
+        <button class="action-btn primary" onclick="showPage('tasks')">+ Add task</button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- OVERVIEW -->
+      <div id="overview-page">
+        <div class="grid-4">
+          <div class="metric"><div class="lbl">Monthly income</div><div class="val green">$4,900</div><div class="sub">W2 active · bi-weekly</div></div>
+          <div class="metric"><div class="lbl">Pending capital</div><div class="val amber">$22,500</div><div class="sub">Solar + Q1 commissions</div></div>
+          <div class="metric"><div class="lbl">Monthly surplus</div><div class="val green">$1,900</div><div class="sub">After $3k expenses</div></div>
+          <div class="metric"><div class="lbl">Acquisition target</div><div class="val">$3,500</div><div class="sub">BioWonder · offer sent</div></div>
+        </div>
+
+        <div class="section-label">Income streams</div>
+        <div class="grid-3">
+          <div class="stream-card" onclick="showPage('jnj')">
+            <div class="stream-header"><div class="stream-name">Johnson & Johnson</div><span class="badge b-green">Active</span></div>
+            <div class="stream-amount">$2,450</div>
+            <div class="stream-freq">Every 2 weeks · W2</div>
+            <div class="stream-bar"><div class="stream-fill" style="width:100%;background:#1D9E75"></div></div>
+          </div>
+          <div class="stream-card" onclick="showPage('solar')">
+            <div class="stream-header"><div class="stream-name">Solar sales</div><span class="badge b-amber">Pending</span></div>
+            <div class="stream-amount">$10,000</div>
+            <div class="stream-freq">3 deals · awaiting payout</div>
+            <div class="stream-bar"><div class="stream-fill" style="width:60%;background:#EF9F27"></div></div>
+          </div>
+          <div class="stream-card" onclick="showPage('ecom')">
+            <div class="stream-header"><div class="stream-name">BioWonder FBA</div><span class="badge b-blue">Acquisition</span></div>
+            <div class="stream-amount">$1,575</div>
+            <div class="stream-freq">Projected · post-close</div>
+            <div class="stream-bar"><div class="stream-fill" style="width:25%;background:#378ADD"></div></div>
+          </div>
+        </div>
+
+        <div class="section-label">Quick actions — send command to Tom</div>
+        <div class="quick-actions">
+          <div class="qa-btn" onclick="alert('Webhook: Ask Tom for BioWonder status update')">
+            <div class="qa-icon">🚀</div>
+            <div class="qa-title">BioWonder status</div>
+            <div class="qa-desc">Get full deal + supplier update</div>
+          </div>
+          <div class="qa-btn" onclick="alert('Webhook: Ask Tom for morning briefing now')">
+            <div class="qa-icon">🌅</div>
+            <div class="qa-title">Morning briefing now</div>
+            <div class="qa-desc">Run briefing on demand</div>
+          </div>
+          <div class="qa-btn" onclick="alert('Webhook: Ask Tom to check email for Matthew, Amit, Murk.r')">
+            <div class="qa-icon">📧</div>
+            <div class="qa-title">Check key emails</div>
+            <div class="qa-desc">Matthew · Amit · Murk.r</div>
+          </div>
+          <div class="qa-btn" onclick="alert('Webhook: Ask Tom for capital plan update')">
+            <div class="qa-icon">💰</div>
+            <div class="qa-title">Capital snapshot</div>
+            <div class="qa-desc">Income · expenses · runway</div>
+          </div>
+          <div class="qa-btn" onclick="alert('Webhook: Ask Tom to update TomMemory with latest')">
+            <div class="qa-icon">🧠</div>
+            <div class="qa-title">Sync memory</div>
+            <div class="qa-desc">Update TomMemory vault</div>
+          </div>
+          <div class="qa-btn" onclick="alert('Webhook: Ask Tom for today task list')">
+            <div class="qa-icon">📋</div>
+            <div class="qa-title">Today's tasks</div>
+            <div class="qa-desc">Pull current open loops</div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header"><div class="card-title">Recent activity</div><span class="card-badge cb-green">Live</span></div>
+            <div class="activity-row">
+              <div class="activity-icon ai-green">🚀</div>
+              <div><div class="activity-text">Invivo confirmed $7.50 all-in COGS. Supplier locked.</div><div class="activity-time">Today · 7:01 PM</div></div>
+            </div>
+            <div class="activity-row">
+              <div class="activity-icon ai-amber">💬</div>
+              <div><div class="activity-text">$3,500 offer sent to Matthew on Flippa officially.</div><div class="activity-time">Today · 7:50 PM</div></div>
+            </div>
+            <div class="activity-row">
+              <div class="activity-icon ai-blue">🧠</div>
+              <div><div class="activity-text">TomMemory updated with full BioWonder context + unit economics.</div><div class="activity-time">Today · 7:30 PM</div></div>
+            </div>
+            <div class="activity-row">
+              <div class="activity-icon ai-green">☀️</div>
+              <div><div class="activity-text">Morning briefing cron set for 8am EST daily.</div><div class="activity-time">Today · 6:50 PM</div></div>
+            </div>
+            <div class="activity-row">
+              <div class="activity-icon ai-gray">⚙️</div>
+              <div><div class="activity-text">OpenClaw reinstalled · Sonnet 4.6 · Discord connected.</div><div class="activity-time">Today · 5:30 PM</div></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">Open priorities</div><span class="card-badge cb-red">5 urgent</span></div>
+            <div class="task-row"><div class="tdot td-red"></div><div><div class="task-text">Await Matthew's response to $3,500 offer</div><div class="task-due">Follow up Wed Apr 2 if silent</div></div></div>
+            <div class="task-row"><div class="tdot td-red"></div><div><div class="task-text">Confirm J&J Q1 commission amount</div><div class="task-due">Expected this week</div></div></div>
+            <div class="task-row"><div class="tdot td-amber"></div><div><div class="task-text">Await Amit's full pricing sheet details</div><div class="task-due">Confirmed $7.50 all-in · net-30 TBD</div></div></div>
+            <div class="task-row"><div class="tdot td-amber"></div><div><div class="task-text">Await Murk.r logo concepts</div><div class="task-due">Pending</div></div></div>
+            <div class="task-row"><div class="tdot td-amber"></div><div><div class="task-text">Follow up on solar commissions timeline</div><div class="task-due">3 deals · $10k pending</div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- J&J PAGE -->
+      <div id="jnj-page" class="hidden">
+        <div class="grid-4">
+          <div class="metric"><div class="lbl">Per paycheck</div><div class="val">$2,450</div><div class="sub">Every 2 weeks</div></div>
+          <div class="metric"><div class="lbl">Monthly W2</div><div class="val green">$4,900</div><div class="sub">2 paychecks/month</div></div>
+          <div class="metric"><div class="lbl">Q1 gross commission</div><div class="val amber">$12,500</div><div class="sub">Expected this week</div></div>
+          <div class="metric"><div class="lbl">Est. net after tax</div><div class="val green">~$8,794</div><div class="sub">No FL state tax</div></div>
+        </div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header"><div class="card-title">Income details</div></div>
+            <div class="info-row"><span class="info-lbl">Role</span><span class="info-val">Medical device sales</span></div>
+            <div class="info-row"><span class="info-lbl">Company</span><span class="info-val">Johnson & Johnson</span></div>
+            <div class="info-row"><span class="info-lbl">Pay frequency</span><span class="info-val">Bi-weekly</span></div>
+            <div class="info-row"><span class="info-lbl">State tax</span><span class="info-val g">None (FL)</span></div>
+            <div class="info-row"><span class="info-lbl">Federal tax est.</span><span class="info-val">22% marginal</span></div>
+            <div class="info-row"><span class="info-lbl">Q1 commission gross</span><span class="info-val">$12,500</span></div>
+            <div class="info-row"><span class="info-lbl">Total withholding est.</span><span class="info-val r">-$3,706</span></div>
+            <div class="info-row"><span class="info-lbl">Est. net take-home</span><span class="info-val g">~$8,794</span></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">Tasks</div></div>
+            <div class="task-row"><div class="tdot td-red"></div><div><div class="task-text">Confirm Q1 commission exact amount with payroll</div><div class="task-due">This week</div></div></div>
+            <div class="task-row"><div class="tdot td-amber"></div><div><div class="task-text">Allocate commission to BioWonder acquisition + inventory</div><div class="task-due">Upon receipt</div></div></div>
+            <div class="task-row"><div class="tdot td-gray"></div><div><div class="task-text">Track Q2 performance vs quota</div><div class="task-due">Ongoing</div></div></div>
+            <div class="task-row"><div class="tdot td-gray"></div><div><div class="task-text">Long-term: J&J becomes optional once portfolio CF > combined income</div><div class="task-due">Year 2-3 target</div></div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Commission allocation plan</div></div>
+          <div class="info-row"><span class="info-lbl">BioWonder acquisition</span><span class="info-val r">-$3,500</span></div>
+          <div class="info-row"><span class="info-lbl">First inventory order (500 units · Invivo)</span><span class="info-val r">-$3,750</span></div>
+          <div class="info-row"><span class="info-lbl">FBA shipping + misc</span><span class="info-val r">-$375</span></div>
+          <div class="info-row"><span class="info-lbl">Total deployment</span><span class="info-val r">-$7,625</span></div>
+          <div class="info-row"><span class="info-lbl">Buffer remaining</span><span class="info-val g">~$1,169</span></div>
+        </div>
+      </div>
+
+      <!-- SOLAR PAGE -->
+      <div id="solar-page" class="hidden">
+        <div class="grid-4">
+          <div class="metric"><div class="lbl">Pending payout</div><div class="val amber">$10,000</div><div class="sub">3 deals closed</div></div>
+          <div class="metric"><div class="lbl">Deals pending</div><div class="val">3</div><div class="sub">Awaiting commission</div></div>
+          <div class="metric"><div class="lbl">Timeline confidence</div><div class="val red">Low</div><div class="sub">Not confirmed</div></div>
+          <div class="metric"><div class="lbl">Strategy</div><div class="val" style="font-size:14px">Don't rely</div><div class="sub">Use J&J commission instead</div></div>
+        </div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header"><div class="card-title">Pipeline</div></div>
+            <div class="info-row"><span class="info-lbl">Deal 1</span><span class="info-val a">Pending payout</span></div>
+            <div class="info-row"><span class="info-lbl">Deal 2</span><span class="info-val a">Pending payout</span></div>
+            <div class="info-row"><span class="info-lbl">Deal 3</span><span class="info-val a">Pending payout</span></div>
+            <div class="info-row"><span class="info-lbl">Total expected</span><span class="info-val g">$10,000</span></div>
+            <div class="info-row"><span class="info-lbl">Allocation when received</span><span class="info-val">Debt payoff or next acquisition</span></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">Tasks</div></div>
+            <div class="task-row"><div class="tdot td-red"></div><div><div class="task-text">Follow up on payout timeline for all 3 deals</div><div class="task-due">This week</div></div></div>
+            <div class="task-row"><div class="tdot td-amber"></div><div><div class="task-text">Do not factor into BioWonder acquisition plan</div><div class="task-due">Use J&J commission as primary capital</div></div></div>
+            <div class="task-row"><div class="tdot td-gray"></div><div><div class="task-text">When received — allocate to September debt payoff target</div><div class="task-due">Upon receipt</div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BIOWONDER PAGE -->
+      <div id="ecom-page" class="hidden">
+        <div class="grid-4">
+          <div class="metric"><div class="lbl">Acquisition cost</div><div class="val">$3,500</div><div class="sub">Offer sent · awaiting</div></div>
+          <div class="metric"><div class="lbl">COGS per unit</div><div class="val green">$7.75</div><div class="sub">Invivo all-in confirmed</div></div>
+          <div class="metric"><div class="lbl">Net/month now</div><div class="val green">~$1,575</div><div class="sub">Current price + volume</div></div>
+          <div class="metric"><div class="lbl">Net/month target</div><div class="val green">~$5,700</div><div class="sub">$74.95 · 100 units</div></div>
+        </div>
+
+        <div class="section-label">Deal status</div>
+        <div class="grid-2" style="margin-bottom:12px">
+          <div class="card">
+            <div class="card-header"><div class="card-title">Negotiation</div><span class="card-badge cb-amber">Awaiting response</span></div>
+            <div class="info-row"><span class="info-lbl">Seller</span><span class="info-val">Matthew · Three Pines Capital LLC</span></div>
+            <div class="info-row"><span class="info-lbl">Our offer</span><span class="info-val">$3,500 · sent on Flippa</span></div>
+            <div class="info-row"><span class="info-lbl">His counter</span><span class="info-val">$4,000 (Mar 27)</span></div>
+            <div class="info-row"><span class="info-lbl">Last contact</span><span class="info-val">Fri Mar 27</span></div>
+            <div class="info-row"><span class="info-lbl">Follow up</span><span class="info-val a">Wed Apr 2 if silent</span></div>
+            <div class="info-row"><span class="info-lbl">Payback period</span><span class="info-val g">2-3 months</span></div>
+            <div class="info-row"><span class="info-lbl">Worst case</span><span class="info-val">Build competing brand via Invivo</span></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">Supplier pipeline</div></div>
+            <div class="sup-row"><div><div class="sup-name">Invivo Biosciences</div><div class="sup-detail">Amit Choksi · COO · $7.50 all-in · 500 MOQ · locked</div></div><span class="badge b-green">Primary</span></div>
+            <div class="sup-row"><div><div class="sup-name">Henwil Custom Chemicals</div><div class="sup-detail">Tim Phelps · custom formula · on hold until close</div></div><span class="badge b-blue">On hold</span></div>
+            <div class="sup-row"><div><div class="sup-name">QB Septic</div><div class="sup-detail">Email sent · no response yet</div></div><span class="badge b-amber">Outreach</span></div>
+            <div class="sup-row"><div><div class="sup-name">BioGP · Applied Biotech</div><div class="sup-detail">Jeff Sutantyo · CFU too high</div></div><span class="badge b-gray">Dead end</span></div>
+          </div>
+        </div>
+
+        <div class="section-label">Post-acquisition playbook</div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header"><div class="card-title">Price ladder</div><span class="card-badge cb-gray">1 week per step</span></div>
+            <div class="price-step"><span class="step-week">Week 1</span><span class="step-price">$42.50 → $45.50</span><span class="step-net">+$3.00/unit</span></div>
+            <div class="price-step"><span class="step-week">Week 2</span><span class="step-price">$45.50 → $49.99</span><span class="step-net">+$4.49/unit</span></div>
+            <div class="price-step"><span class="step-week">Week 3</span><span class="step-price">$49.99 → $54.99</span><span class="step-net">+$5.00/unit</span></div>
+            <div class="price-step"><span class="step-week">Week 4</span><span class="step-price">$54.99 → $59.99</span><span class="step-net">+$5.00/unit</span></div>
+            <div class="price-step"><span class="step-week">Week 5</span><span class="step-price">$59.99 → $64.99</span><span class="step-net">+$5.00/unit</span></div>
+            <div class="price-step"><span class="step-week">Week 6</span><span class="step-price">$64.99 → $69.99</span><span class="step-net">+$5.00/unit</span></div>
+            <div class="price-step"><span class="step-week">Week 7</span><span class="step-price">$69.99 → $74.95</span><span class="step-net">Target ceiling</span></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">Open tasks</div></div>
+            <div class="task-row"><div class="tdot td-red"></div><div><div class="task-text">Await Matthew's response to $3,500 offer</div><div class="task-due">Follow up Wed Apr 2 if silent</div></div></div>
+            <div class="task-row"><div class="tdot td-amber"></div><div><div class="task-text">Await Murk.r logo concepts</div><div class="task-due">Pending</div></div></div>
+            <div class="task-row"><div class="tdot td-amber"></div><div><div class="task-text">Register biowonder.com + @biowonder handles</div><div class="task-due">Hold until deal confirmed</div></div></div>
+            <div class="task-row"><div class="tdot td-amber"></div><div><div class="task-text">Place first inventory order with Amit · request net-30</div><div class="task-due">Upon close · 500 units · $3,750</div></div></div>
+            <div class="task-row"><div class="tdot td-gray"></div><div><div class="task-text">File trademark assignment post-close</div><div class="task-due">Section 8 declaration due Sep 2026</div></div></div>
+            <div class="task-row"><div class="tdot td-gray"></div><div><div class="task-text">SKU expansion: drain unclog kit → 12-pack pods</div><div class="task-due">Phase 2 · months 3-9</div></div></div>
+          </div>
+        </div>
+
+        <div class="section-label">Unit economics</div>
+        <div class="grid-4">
+          <div class="metric"><div class="lbl">COGS all-in</div><div class="val">$7.75</div><div class="sub">Invivo + packaging</div></div>
+          <div class="metric"><div class="lbl">Amazon fees est.</div><div class="val">~$9</div><div class="sub">FBA + referral 15%</div></div>
+          <div class="metric"><div class="lbl">Net at $42.50</div><div class="val green">~$21</div><div class="sub">Current price</div></div>
+          <div class="metric"><div class="lbl">Net at $74.95</div><div class="val green">~$53</div><div class="sub">Target price</div></div>
+        </div>
+      </div>
+
+      <!-- CAPITAL PLAN PAGE -->
+      <div id="capital-page" class="hidden">
+        <div class="grid-4">
+          <div class="metric"><div class="lbl">Monthly surplus</div><div class="val green">$1,900</div><div class="sub">After $3k expenses</div></div>
+          <div class="metric"><div class="lbl">J&J commission est.</div><div class="val amber">~$8,794</div><div class="sub">Net after tax</div></div>
+          <div class="metric"><div class="lbl">Total to deploy</div><div class="val">~$7,625</div><div class="sub">Acquisition + inventory</div></div>
+          <div class="metric"><div class="lbl">Buffer after deploy</div><div class="val green">~$1,169</div><div class="sub">Emergency reserve</div></div>
+        </div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header"><div class="card-title">Deployment plan</div></div>
+            <div class="info-row"><span class="info-lbl">BioWonder acquisition</span><span class="info-val r">-$3,500</span></div>
+            <div class="info-row"><span class="info-lbl">First inventory · 500 units</span><span class="info-val r">-$3,750</span></div>
+            <div class="info-row"><span class="info-lbl">FBA shipping + misc</span><span class="info-val r">-$375</span></div>
+            <div class="info-row"><span class="info-lbl">Total deployment</span><span class="info-val r">-$7,625</span></div>
+            <div class="info-row"><span class="info-lbl">Buffer remaining</span><span class="info-val g">~$1,169</span></div>
+            <div class="divider"></div>
+            <div class="info-row"><span class="info-lbl">Debt payoff target</span><span class="info-val">September 2026</span></div>
+            <div class="info-row"><span class="info-lbl">Post-debt: home purchase</span><span class="info-val">Q4 2026 / Q1 2027</span></div>
+            <div class="info-row"><span class="info-lbl">Second acquisition</span><span class="info-val">Year 2 · BioWonder CF funded</span></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">Milestones</div></div>
+            <div class="task-row"><div class="tdot td-red"></div><div><div class="task-text">Receive J&J Q1 commission (~$8,794)</div><div class="task-due">This week</div></div></div>
+            <div class="task-row"><div class="tdot td-red"></div><div><div class="task-text">Close BioWonder at $3,500</div><div class="task-due">This week / next</div></div></div>
+            <div class="task-row"><div class="tdot td-amber"></div><div><div class="task-text">First inventory order live on Amazon</div><div class="task-due">2-3 weeks post-close</div></div></div>
+            <div class="task-row"><div class="tdot td-amber"></div><div><div class="task-text">BioWonder reaches $3,000+/month net</div><div class="task-due">Month 3-4 · price ladder complete</div></div></div>
+            <div class="task-row"><div class="tdot td-gray"></div><div><div class="task-text">Credit card debt paid off</div><div class="task-due">September 2026</div></div></div>
+            <div class="task-row"><div class="tdot td-gray"></div><div><div class="task-text">Home purchase</div><div class="task-due">Post debt payoff</div></div></div>
+            <div class="task-row"><div class="tdot td-gray"></div><div><div class="task-text">Second business acquisition</div><div class="task-due">Year 2</div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TASK BOARD -->
+      <div id="tasks-page" class="hidden">
+        <div class="kanban">
+          <div class="kanban-col">
+            <div class="kanban-header">Urgent <span class="kanban-count">3</span></div>
+            <div class="kanban-card">
+              <div class="kc-title">Await Matthew's response to $3,500 offer</div>
+              <div class="kc-meta">Follow up Wed Apr 2 if silent</div>
+              <div class="kc-tag tag-amber">BioWonder</div>
+            </div>
+            <div class="kanban-card">
+              <div class="kc-title">Confirm J&J Q1 commission amount</div>
+              <div class="kc-meta">Expected this week · ~$8,794 net</div>
+              <div class="kc-tag tag-green">J&J</div>
+            </div>
+            <div class="kanban-card">
+              <div class="kc-title">Follow up solar commissions timeline</div>
+              <div class="kc-meta">3 deals · $10k pending · timeline unclear</div>
+              <div class="kc-tag tag-amber">Solar</div>
+            </div>
+          </div>
+          <div class="kanban-col">
+            <div class="kanban-header">In progress <span class="kanban-count">4</span></div>
+            <div class="kanban-card">
+              <div class="kc-title">Await Invivo pricing sheet details</div>
+              <div class="kc-meta">$7.50 all-in confirmed · net-30 TBD</div>
+              <div class="kc-tag tag-green">BioWonder</div>
+            </div>
+            <div class="kanban-card">
+              <div class="kc-title">Await Murk.r logo concepts</div>
+              <div class="kc-meta">$150 premium tier · brief sent</div>
+              <div class="kc-tag tag-blue">Brand</div>
+            </div>
+            <div class="kanban-card">
+              <div class="kc-title">Tom foundation build-out</div>
+              <div class="kc-meta">Memory · briefing · calendar · email</div>
+              <div class="kc-tag tag-blue">Tom</div>
+            </div>
+            <div class="kanban-card">
+              <div class="kc-title">Mission control dashboard</div>
+              <div class="kc-meta">Live on Replit · connecting Tom</div>
+              <div class="kc-tag tag-blue">Tom</div>
+            </div>
+          </div>
+          <div class="kanban-col">
+            <div class="kanban-header">Waiting / blocked <span class="kanban-count">4</span></div>
+            <div class="kanban-card">
+              <div class="kc-title">Register biowonder.com + social handles</div>
+              <div class="kc-meta">Hold until deal confirmed</div>
+              <div class="kc-tag tag-amber">BioWonder</div>
+            </div>
+            <div class="kanban-card">
+              <div class="kc-title">First inventory order with Amit</div>
+              <div class="kc-meta">500 units · $3,750 · request net-30</div>
+              <div class="kc-tag tag-green">BioWonder</div>
+            </div>
+            <div class="kanban-card">
+              <div class="kc-title">Trademark assignment filing</div>
+              <div class="kc-meta">Post-close · Section 8 due Sep 2026</div>
+              <div class="kc-tag tag-amber">BioWonder</div>
+            </div>
+            <div class="kanban-card">
+              <div class="kc-title">Connect Tom → Replit API</div>
+              <div class="kc-meta">Auto-update dashboard data</div>
+              <div class="kc-tag tag-blue">Tom</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DOCS PAGE -->
+      <div id="docs-page" class="hidden">
+        <div class="card" style="margin-bottom:12px">
+          <div class="card-header"><div class="card-title">Documents</div><span class="card-badge cb-gray">Tom saves docs here</span></div>
+          <div class="doc-row">
+            <div><div class="doc-name">BioWonder Acquisition Summary</div><div class="doc-meta">Full deal overview · seller · pricing · thesis</div></div>
+            <span class="doc-type b-green badge">Acquisition</span>
+          </div>
+          <div class="doc-row">
+            <div><div class="doc-name">BioWonder 180-Day Plan</div><div class="doc-meta">Post-close roadmap · price ladder · SKU expansion</div></div>
+            <span class="doc-type b-green badge">Acquisition</span>
+          </div>
+          <div class="doc-row">
+            <div><div class="doc-name">BioWonder Asset Inventory</div><div class="doc-meta">Amazon account · trademark · reviews · listing</div></div>
+            <span class="doc-type b-green badge">Acquisition</span>
+          </div>
+          <div class="doc-row">
+            <div><div class="doc-name">BioWonder Purchase Agreement</div><div class="doc-meta">Signed purchase agreement template</div></div>
+            <span class="doc-type b-amber badge">Legal</span>
+          </div>
+          <div class="doc-row">
+            <div><div class="doc-name">Invivo Biosciences — Supplier Brief</div><div class="doc-meta">Amit Choksi · $7.50 COGS · MOQ · process</div></div>
+            <span class="doc-type b-blue badge">Supplier</span>
+          </div>
+          <div class="doc-row">
+            <div><div class="doc-name">Unit Economics Model</div><div class="doc-meta">COGS · fees · price ladder · projections</div></div>
+            <span class="doc-type b-gray badge">Analysis</span>
+          </div>
+          <div class="doc-row">
+            <div><div class="doc-name">Blessopher Capital — Brand Identity Brief</div><div class="doc-meta">Logo brief · palette · designer notes</div></div>
+            <span class="doc-type b-blue badge">Brand</span>
+          </div>
+          <div class="doc-row">
+            <div><div class="doc-name">Competitor Matrix</div><div class="doc-meta">Septic treatment category analysis</div></div>
+            <span class="doc-type b-gray badge">Research</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">How to add docs</div></div>
+          <div style="font-size:13px;color:#888;line-height:1.7">
+            Tell Tom in Discord: <strong style="color:#1a1a1a">"@Tom save this as a doc in my mission control docs section"</strong> and he will write the document to your TomMemory vault. Once the Replit API is connected, new docs will appear here automatically.
+          </div>
+        </div>
+      </div>
+
+      <!-- SCHEDULE PAGE -->
+      <div id="schedule-page" class="hidden">
+        <div class="card" style="margin-bottom:12px">
+          <div class="card-header"><div class="card-title">Scheduled tasks</div><span class="card-badge cb-green">Tom-managed</span></div>
+          <div class="cron-row">
+            <div>
+              <div class="cron-name">Morning briefing</div>
+              <div class="cron-detail">#morning-briefing · Bible verse · weather · calendar · to-do · BioWonder · finance · news</div>
+            </div>
+            <div style="text-align:right">
+              <div class="cron-time">8:00 AM EST · daily</div>
+              <div class="cron-status cb-green badge" style="font-size:11px;padding:2px 8px;border-radius:20px;margin-top:4px;display:inline-block">Active</div>
+            </div>
+          </div>
+          <div class="cron-row">
+            <div>
+              <div class="cron-name">Heartbeat check</div>
+              <div class="cron-detail">Tom checks HEARTBEAT.md and takes action if needed</div>
+            </div>
+            <div style="text-align:right">
+              <div class="cron-time">Every 6 hours</div>
+              <div class="cron-status cb-green badge" style="font-size:11px;padding:2px 8px;border-radius:20px;margin-top:4px;display:inline-block">Active</div>
+            </div>
+          </div>
+          <div class="cron-row">
+            <div>
+              <div class="cron-name">Matthew follow-up reminder</div>
+              <div class="cron-detail">Remind Mr. Bless to follow up if Matthew hasn't responded</div>
+            </div>
+            <div style="text-align:right">
+              <div class="cron-time">Wed Apr 2 · 9:00 AM</div>
+              <div class="cron-status cb-amber badge" style="font-size:11px;padding:2px 8px;border-radius:20px;margin-top:4px;display:inline-block">Scheduled</div>
+            </div>
+          </div>
+          <div class="cron-row">
+            <div>
+              <div class="cron-name">Amazon listing monitor</div>
+              <div class="cron-detail">Daily BioWonder ranking · badge · price check</div>
+            </div>
+            <div style="text-align:right">
+              <div class="cron-time">Post-acquisition</div>
+              <div class="cron-status cb-gray badge" style="font-size:11px;padding:2px 8px;border-radius:20px;margin-top:4px;display:inline-block">Pending</div>
+            </div>
+          </div>
+          <div class="cron-row">
+            <div>
+              <div class="cron-name">Inventory reorder alert</div>
+              <div class="cron-detail">Alert when BioWonder stock drops below 2-week threshold</div>
+            </div>
+            <div style="text-align:right">
+              <div class="cron-time">Post-acquisition</div>
+              <div class="cron-status cb-gray badge" style="font-size:11px;padding:2px 8px;border-radius:20px;margin-top:4px;display:inline-block">Pending</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TOM PAGE -->
+      <div id="tom-page" class="hidden">
+        <div class="grid-4">
+          <div class="metric"><div class="lbl">Status</div><div class="val green">Online</div><div class="sub">Gateway running</div></div>
+          <div class="metric"><div class="lbl">Model</div><div class="val" style="font-size:16px">Sonnet 4.6</div><div class="sub">via OpenRouter</div></div>
+          <div class="metric"><div class="lbl">Heartbeat</div><div class="val" style="font-size:16px">6h</div><div class="sub">Conserving tokens</div></div>
+          <div class="metric"><div class="lbl">Memory</div><div class="val green">Active</div><div class="sub">TomMemory vault</div></div>
+        </div>
+        <div class="grid-2">
+          <div class="tom-card">
+            <div class="tom-card-header"><div class="tom-card-title">Tom configuration</div></div>
+            <div class="tom-info-row"><span class="tom-lbl">Model</span><span class="tom-val">anthropic/claude-sonnet-4-6</span></div>
+            <div class="tom-info-row"><span class="tom-lbl">Provider</span><span class="tom-val">OpenRouter</span></div>
+            <div class="tom-info-row"><span class="tom-lbl">Channel</span><span class="tom-val on">Discord · Mastermind server</span></div>
+            <div class="tom-info-row"><span class="tom-lbl">Memory vault</span><span class="tom-val on">/Users/christopherbless/TomMemory</span></div>
+            <div class="tom-info-row"><span class="tom-lbl">Web search</span><span class="tom-val on">DuckDuckGo · enabled</span></div>
+            <div class="tom-info-row"><span class="tom-lbl">Calendar</span><span class="tom-val on">Apple Calendar · icalbuddy</span></div>
+            <div class="tom-info-row"><span class="tom-lbl">Browser</span><span class="tom-val on">Firefox · isolated profile</span></div>
+            <div class="tom-info-row"><span class="tom-lbl">Heartbeat</span><span class="tom-val">Every 6 hours</span></div>
+            <div class="tom-info-row"><span class="tom-lbl">Morning briefing</span><span class="tom-val on">8:00 AM EST · daily</span></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">Tom's capabilities</div></div>
+            <div class="task-row"><div class="tdot td-green"></div><div><div class="task-text">Morning briefings · daily at 8am</div></div></div>
+            <div class="task-row"><div class="tdot td-green"></div><div><div class="task-text">Calendar integration · Apple Calendar</div></div></div>
+            <div class="task-row"><div class="tdot td-green"></div><div><div class="task-text">Web search · DuckDuckGo</div></div></div>
+            <div class="task-row"><div class="tdot td-green"></div><div><div class="task-text">Memory · Obsidian TomMemory vault</div></div></div>
+            <div class="task-row"><div class="tdot td-green"></div><div><div class="task-text">Browser automation · Firefox isolated</div></div></div>
+            <div class="task-row"><div class="tdot td-amber"></div><div><div class="task-text">Email monitoring · Gmail (setup pending)</div></div></div>
+            <div class="task-row"><div class="tdot td-amber"></div><div><div class="task-text">Replit API connection (setup pending)</div></div></div>
+            <div class="task-row"><div class="tdot td-gray"></div><div><div class="task-text">Amazon listing monitor (post-acquisition)</div></div></div>
+            <div class="task-row"><div class="tdot td-gray"></div><div><div class="task-text">Subagents for store management (phase 2)</div></div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">How to interact with Tom</div></div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;font-size:13px">
+            <div>
+              <div style="font-weight:500;margin-bottom:6px">Daily use</div>
+              <div style="color:#888;line-height:1.7">Message @Tom in Discord #general. He responds in seconds. No need to mention commands — just talk naturally.</div>
+            </div>
+            <div>
+              <div style="font-weight:500;margin-bottom:6px">Memory updates</div>
+              <div style="color:#888;line-height:1.7">Tell Tom things as they happen. "Matthew responded with X" → Tom updates TomMemory automatically.</div>
+            </div>
+            <div>
+              <div style="font-weight:500;margin-bottom:6px">Build new tools</div>
+              <div style="color:#888;line-height:1.7">Ask Tom to build custom tools for mission control. He vibe-codes them and they get added to this dashboard.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+document.getElementById('ds').textContent = new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'});
+
+const pages = ['overview','jnj','solar','ecom','capital','tasks','docs','schedule','tom'];
+const titles = {overview:'Overview',jnj:'J&J W2',solar:'Solar sales',ecom:'BioWonder FBA',capital:'Capital plan',tasks:'Task board',docs:'Docs',schedule:'Schedule',tom:'Tom'};
+
+function showPage(name){
+  pages.forEach(p=>{
+    const el = document.getElementById(p+'-page');
+    if(el) el.classList.add('hidden');
+  });
+  const target = document.getElementById(name+'-page');
+  if(target) target.classList.remove('hidden');
+  document.getElementById('page-title').textContent = titles[name] || name;
+  document.querySelectorAll('.nav-item').forEach(n=>{
+    n.classList.toggle('active', n.getAttribute('onclick') && n.getAttribute('onclick').includes("'"+name+"'"));
+  });
+}
+</script>
+</body>
+</html>
