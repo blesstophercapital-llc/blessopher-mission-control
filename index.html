@@ -152,6 +152,42 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .tom-val.on{color:#6BAF6A}
 .divider{height:1px;background:#F0F0EC;margin:1.25rem 0}
 @media(max-width:900px){.sidebar{display:none}.grid-4{grid-template-columns:repeat(2,1fr)}.grid-3{grid-template-columns:1fr}.kanban{grid-template-columns:1fr}.quick-actions{grid-template-columns:repeat(2,1fr)}}
+
+/* Tom modal */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+}
+.modal-content {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 600px;
+  position: relative;
+}
+.modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  cursor: pointer;
+  font-size: 20px;
+  color: #888;
+}
+.tom-response {
+  margin-top: 1rem;
+  font-size: 14px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
 </style>
 </head>
 <body>
@@ -263,32 +299,32 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
         <div class="section-label">Quick actions — send command to Tom</div>
         <div class="quick-actions">
-          <div class="qa-btn" onclick="alert('Webhook: Ask Tom for BioWonder status update')">
+          <div class="qa-btn" onclick="askTom('Give me a full BioWonder status update - deal status, supplier status, and next steps.')">
             <div class="qa-icon">🚀</div>
             <div class="qa-title">BioWonder status</div>
             <div class="qa-desc">Get full deal + supplier update</div>
           </div>
-          <div class="qa-btn" onclick="alert('Webhook: Ask Tom for morning briefing now')">
+          <div class="qa-btn" onclick="askTom('Run your morning briefing now.')">
             <div class="qa-icon">🌅</div>
             <div class="qa-title">Morning briefing now</div>
             <div class="qa-desc">Run briefing on demand</div>
           </div>
-          <div class="qa-btn" onclick="alert('Webhook: Ask Tom to check email for Matthew, Amit, Murk.r')">
+          <div class="qa-btn" onclick="askTom('Check my email for any messages from Matthew, Amit, or Murk.r.')">
             <div class="qa-icon">📧</div>
             <div class="qa-title">Check key emails</div>
             <div class="qa-desc">Matthew · Amit · Murk.r</div>
           </div>
-          <div class="qa-btn" onclick="alert('Webhook: Ask Tom for capital plan update')">
+          <div class="qa-btn" onclick="askTom('Give me a capital plan update - income, expenses, and runway status.')">
             <div class="qa-icon">💰</div>
             <div class="qa-title">Capital snapshot</div>
             <div class="qa-desc">Income · expenses · runway</div>
           </div>
-          <div class="qa-btn" onclick="alert('Webhook: Ask Tom to update TomMemory with latest')">
+          <div class="qa-btn" onclick="askTom('Update TomMemory with all the latest info and changes.')">
             <div class="qa-icon">🧠</div>
             <div class="qa-title">Sync memory</div>
             <div class="qa-desc">Update TomMemory vault</div>
           </div>
-          <div class="qa-btn" onclick="alert('Webhook: Ask Tom for today task list')">
+          <div class="qa-btn" onclick="askTom('What are my key tasks and open loops for today?')">
             <div class="qa-icon">📋</div>
             <div class="qa-title">Today's tasks</div>
             <div class="qa-desc">Pull current open loops</div>
@@ -736,6 +772,38 @@ function showPage(name){
   document.querySelectorAll('.nav-item').forEach(n=>{
     n.classList.toggle('active', n.getAttribute('onclick') && n.getAttribute('onclick').includes("'"+name+"'"));
   });
+}
+</script>
+
+<!-- Tom response modal -->
+<div class="modal" id="tom-modal">
+  <div class="modal-content">
+    <div class="modal-close" onclick="closeTom()">×</div>
+    <div id="tom-response" class="tom-response">Thinking...</div>
+  </div>
+</div>
+
+<script>
+async function askTom(message) {
+  const modal = document.getElementById('tom-modal');
+  const responseEl = document.getElementById('tom-response');
+  modal.style.display = 'flex';
+  responseEl.textContent = 'Thinking...';
+  try {
+    const res = await fetch('/.netlify/functions/tom', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message })
+    });
+    const data = await res.json();
+    responseEl.textContent = data.reply;
+  } catch (err) {
+    responseEl.textContent = 'Error reaching Tom.';
+  }
+}
+
+function closeTom() {
+  document.getElementById('tom-modal').style.display = 'none';
 }
 </script>
 </body>
