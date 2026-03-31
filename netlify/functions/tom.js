@@ -38,7 +38,7 @@ exports.handler = async (event) => {
         'X-Title': 'Blessopher Mission Control'
       },
       body: JSON.stringify({
-        model: 'anthropic/claude-3-sonnet-20240229',
+        model: 'anthropic/claude-haiku-4-5',
         messages: [
           { 
             role: 'system', 
