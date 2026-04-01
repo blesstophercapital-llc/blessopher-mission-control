@@ -34,7 +34,7 @@ exports.handler = async (event) => {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${apiKey}`,
-        'HTTP-Referer': 'https://bcmissioncontrol.netlify.app/',
+        'HTTP-Referer': 'https://blessopher-mission-control.pages.dev/',
         'X-Title': 'Blessopher Mission Control'
       },
       body: JSON.stringify({
