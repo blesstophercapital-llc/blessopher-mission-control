@@ -798,7 +798,7 @@ async function askTom(message) {
   modal.style.display = 'flex';
   responseEl.textContent = 'Thinking...';
   try {
-    const res = await fetch('/.https://tom-api.blesstophercapital.workers.dev', {
+    const res = await fetch('https://tom-api.blesstophercapital.workers.dev', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ message })
