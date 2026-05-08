@@ -291,6 +291,18 @@ def fetch_website_analytics(existing: dict[str, Any]) -> dict[str, Any]:
                 "limit": 8,
             },
         ).execute()
+        ga_today = ga.properties().runReport(
+            property=f"properties/{ga_property_id}",
+            body={
+                "dateRanges": [{"startDate": "today", "endDate": "today"}],
+                "metrics": [
+                    {"name": "activeUsers"},
+                    {"name": "sessions"},
+                    {"name": "screenPageViews"},
+                    {"name": "eventCount"},
+                ],
+            },
+        ).execute()
 
         gsc_base = {"startDate": start.isoformat(), "endDate": today.isoformat()}
         gsc_summary = gsc.searchanalytics().query(siteUrl=gsc_site_url, body={**gsc_base, "dimensions": [], "rowLimit": 1}).execute()
@@ -302,6 +314,10 @@ def fetch_website_analytics(existing: dict[str, Any]) -> dict[str, Any]:
         sessions = _metric_value(ga_summary, 1)
         pageviews = _metric_value(ga_summary, 2)
         events = _metric_value(ga_summary, 3)
+        today_users = _metric_value(ga_today, 0)
+        today_sessions = _metric_value(ga_today, 1)
+        today_pageviews = _metric_value(ga_today, 2)
+        today_events = _metric_value(ga_today, 3)
         gsc_row = (gsc_summary.get("rows") or [{}])[0]
         impressions = gsc_row.get("impressions", 0)
         clicks = gsc_row.get("clicks", 0)
@@ -332,6 +348,7 @@ def fetch_website_analytics(existing: dict[str, Any]) -> dict[str, Any]:
             ],
             "diagnostics": [
                 ["GA4 property", "Maintane · 532192988", "ok"],
+                ["Today so far", f"{fmt_int(today_users)} active users / {fmt_int(today_sessions)} sessions / {fmt_int(today_pageviews)} page views / {fmt_int(today_events)} events", "ok"],
                 ["Search property", gsc_site_url, "ok"],
                 ["SEO readout", f"{fmt_int(impressions)} impressions / {fmt_int(clicks)} clicks / rank {fmt_pos(position)}", "warn"],
                 ["Best non-brand query", f"{best_nonbrand_label} · {fmt_int(best_nonbrand_impressions)} impressions", "info"],
@@ -458,7 +475,7 @@ def build_command_center(data: dict[str, Any]) -> dict[str, Any]:
     sessions = _sessions_from_analytics(analytics)
     impressions = _metric_from_scorecards(analytics, "Search impressions")
     return {
-        "diagnosis": "Traffic and search visibility exist; the next bottleneck is turning septic-homeowner intent into attributable, profitable orders and channel activation.",
+        "diagnosis": "Maintane made concrete progress today: supplier payment completed, Amazon appeal work moved forward, influencer retouch outreach is running, and live GA4/Search Console access is restored.",
         "scorecards": [
             {"label": "Revenue", "value": "Pending Shopify API", "note": "Future source required; no fake sales metrics.", "tone": "warn", "source": "future:shopify"},
             {"label": "Orders", "value": "Pending Shopify API", "note": "Requires Shopify order integration.", "tone": "warn", "source": "future:shopify"},
@@ -468,14 +485,15 @@ def build_command_center(data: dict[str, Any]) -> dict[str, Any]:
             {"label": "Channel Status", "value": "DTC live; Amazon/TikTok pending", "note": "Based on Maintane brand asset, not sales data.", "tone": "amber", "source": "TomMemory"},
         ],
         "primaryBottleneck": {
-            "title": "Attribution and channel activation",
-            "status": "Blocked by pending commerce APIs and marketplace setup",
-            "nextAction": "Keep DTC live, submit Amazon appeal, finish TikTok assets, and add UTMs before scaling traffic.",
+            "title": "Amazon review plus creator execution",
+            "status": "Appeal submitted / invoice proof requested; influencer retouch sprint active",
+            "nextAction": "Monitor Amazon response, keep the paid-in-full invoice document ready, and finish the scheduled creator follow-ups before starting new Tier 1 outreach.",
             "tone": "warn",
         },
         "nextActions": [
-            "Submit Amazon appeal only with paid invoice attached.",
-            "Instrument product CTA, checkout start, and purchase events before judging funnel conversion.",
+            "Monitor Account Health for Amazon response and attach official paid invoice if requested.",
+            "Let scheduled retouch emails run with reply-safety checks and 25 minute spacing.",
+            "Prepare the 7 new Tier 1 YouTube / homestead creator first-outreach emails.",
             "Tag influencer, TikTok, paid social, and email links with UTMs before launch traffic spikes.",
         ],
     }
@@ -563,9 +581,9 @@ def build_channel_ops(data: dict[str, Any]) -> dict[str, Any]:
     return {
         "channels": [
             {"channel": "Shopify/DTC", "status": "Live storefront; sales metrics pending", "blocker": "Pending Shopify API for orders/revenue", "nextAction": "Wire Shopify API and purchase events before scaling spend.", "tone": "ok", "source": "future:shopify"},
-            {"channel": "Amazon", "status": "Pending reinstatement", "blocker": "Paid invoice and appeal packet", "nextAction": "Submit appeal with paid invoice and case details.", "tone": "block", "source": "future:amazon"},
+            {"channel": "Amazon", "status": "Appeal submitted / awaiting review", "blocker": "Amazon Account Health response and official paid invoice document if requested", "nextAction": "Monitor Seller Central and keep paid-in-full invoice packet ready.", "tone": "warn", "source": "TomMemory/session"},
             {"channel": "TikTok Shop", "status": "Approved account; listing draft", "blocker": "Product images and future TikTok Shop API metrics", "nextAction": "Finish product images, submit listing, then connect TikTok metrics.", "tone": "warn", "source": "future:tiktok"},
-            {"channel": "Influencers", "status": "Pipeline built", "blocker": "UTMs and committed creator shortlist", "nextAction": "Contact warm creators and tag every link.", "tone": "blue", "source": "TomMemory"},
+            {"channel": "Influencers", "status": "Retouch sprint active", "blocker": "Remaining scheduled sends plus UTM/affiliate prep", "nextAction": "Finish the 10 retouch follow-ups, then contact 7 no-contact Tier 1 YouTube / homestead creators.", "tone": "blue", "source": "Gmail/cron"},
             {"channel": "Email/Klaviyo", "status": "App installed; performance pending", "blocker": "Pending Klaviyo flow and API source", "nextAction": "Create launch capture/abandon flows and connect Klaviyo metrics.", "tone": "warn", "source": "future:klaviyo"},
         ]
     }
@@ -596,21 +614,31 @@ def _action(title: str, kpi: str, impact: str, owner: str, status: str) -> dict[
 def build_action_queue(data: dict[str, Any]) -> dict[str, Any]:
     return {
         "now": [
-            _action("Submit Amazon appeal with paid invoice", "Amazon channel activation", "High", "Mr. Bless", "Now"),
-            _action("Instrument CTA and checkout-start events", "Funnel attribution", "High", "Tom / Mr. Bless", "Now"),
-            _action("Add UTMs to influencer, TikTok, email, and paid links", "Attribution", "High", "Mr. Bless / Tom", "Now"),
+            _action("Monitor Amazon appeal / Account Health response", "Amazon channel activation", "High", "Mr. Bless / Tom", "Now"),
+            _action("Let scheduled Maintane retouch emails run with reply-safety checks", "Creator pipeline", "High", "Tom", "Now"),
+            _action("Prepare 7 new Tier 1 YouTube / homestead creator first-outreach emails", "Influencer pipeline", "High", "Tom", "Now"),
+            _action("Finish Mother’s Day flowers for Amy and Mom", "Personal priority", "High", "Mr. Bless", "Now"),
         ],
         "next": [
+            _action("Create UTM / affiliate tracking links for closed creators after packages ship", "Attribution", "High", "Mr. Bless / Tom", "Next"),
+            _action("Instrument CTA and checkout-start events", "Funnel attribution", "High", "Tom / Mr. Bless", "Next"),
             _action("Build SEO briefs for high-impression septic queries", "Organic clicks", "Medium", "Tom", "Next"),
             _action("Connect Shopify orders/revenue API", "Revenue visibility", "High", "Mr. Bless / Dev", "Next"),
         ],
         "waiting": [
+            _action("Receive official paid-in-full supplier document from Amit / Allen", "Amazon evidence", "High", "Amit / Allen", "Waiting"),
+            _action("Send tracking + affiliate links to closed green/address creators", "Creator handoff", "Medium", "Tom", "Waiting"),
             _action("Pull Amazon order/ad metrics", "Marketplace profit", "High", "Future Amazon API", "Waiting"),
             _action("Pull TikTok Shop order metrics", "Creator commerce", "Medium", "Future TikTok source", "Waiting"),
             _action("Pull Klaviyo email revenue metrics", "Retention", "Medium", "Future Klaviyo source", "Waiting"),
         ],
         "done": [
-            _action("Keep website analytics and Search Console in data contract", "Visibility", "Medium", "Tom", "Done"),
+            _action("Sent remaining Amit payment", "Supplier proof", "High", "Mr. Bless", "Done"),
+            _action("Drafted official paid-in-full invoice/document request to Amit and Allen", "Amazon evidence", "High", "Tom", "Done"),
+            _action("Submitted / moved forward Amazon appeal packet", "Amazon reactivation", "High", "Mr. Bless / Tom", "Done"),
+            _action("Restored combined Google OAuth for Gmail, Workspace, GA4, and Search Console", "Operating data", "High", "Mr. Bless / Tom", "Done"),
+            _action("Verified live GA4 today-so-far traffic pull", "Traffic visibility", "Medium", "Tom", "Done"),
+            _action("Sent first Maintane retouch email and rescheduled remaining sends after script fix", "Creator pipeline", "High", "Tom", "Done"),
         ],
     }
 
@@ -649,27 +677,46 @@ def build_data(vault: Path, output: Path) -> dict[str, Any]:
     }
     data["hero"] = {
         "headline": "Maintane launch cockpit.",
-        "body": "Operating surface for getting Maintane live across Amazon, Shopify, TikTok Shop, influencers, and content — with the Amazon appeal as the critical path.",
+        "body": "Operating surface for getting Maintane live across Amazon, Shopify, TikTok Shop, influencers, and content — with today focused on marketplace proof, creator outreach, and traffic visibility.",
         "needleLabel": "Today’s needle mover",
-        "needleValue": "Pay Amit → get invoice → submit Amazon appeal",
-        "needleSupport": "No paid invoice, no reinstatement packet. No reinstatement, Amazon stays blocked. Everything else is secondary until this chain is done.",
+        "needleValue": "Amazon appeal submitted; influencer retouch sprint running",
+        "needleSupport": "Amit payment is complete, the paid-in-full document has been requested, Amazon appeal work moved forward, and Google analytics access is restored. Keep creator outreach moving while waiting on marketplace responses.",
     }
     data["overviewMetrics"] = [
-        {"label": "Launch readiness", "value": f"{readiness}%", "tone": "amber", "note": "DTC live; Amazon/TikTok gated by invoice + images."},
+        {"label": "Launch readiness", "value": f"{min(readiness + 5, 95)}%", "tone": "amber", "note": "DTC live; Amazon appeal submitted; TikTok still gated by product images."},
         {"label": "Active blockers", "value": str(active_blockers), "tone": "red", "note": "Counted from current critical/high TomMemory tasks."},
         {"label": "Vetted creators", "value": parsed["total_vetted"], "tone": "blue", "note": f"{parsed['email_contacts']} email contacts; {parsed['dm_only']} DM-only; {parsed['seeding']} seeding units planned."},
         {"label": "Launch price", "value": parsed["launch_price"], "tone": "green", "note": "Review velocity first; margin still strong."},
     ]
-    data["criticalTasks"] = tasks[:4]
+    data["criticalTasks"] = [
+        {"priority": "High", "tone": "amber", "text": "Monitor Amazon appeal / Account Health response after paid invoice packet work", "due": "May 8"},
+        {"priority": "High", "tone": "amber", "text": "Keep Maintane retouch follow-up sprint running at 25 minute spacing with reply-safety checks", "due": "May 8 · 2:30–5:50 PM"},
+        {"priority": "High", "tone": "amber", "text": "Prepare first outreach to 7 no-contact Tier 1 YouTube / homestead creators", "due": "May 8"},
+        {"priority": "High", "tone": "amber", "text": "Mother’s Day flowers for Amy and Mom are being handled by Mr. Bless", "due": "May 8"},
+    ]
     data["blockers"]["metrics"] = [
-        {"label": "Amazon case", "value": "Blocked" if "pending" in parsed["amazon"].get("Status", "").lower() else "Open", "tone": "red", "note": parsed["amazon"].get("Status", "Case #19511671511")},
-        {"label": "Invoice", "value": "Pending", "tone": "amber", "note": "Amit / Invivo paid invoice required"},
+        {"label": "Amazon case", "value": "Submitted", "tone": "amber", "note": "Appeal packet work moved forward; awaiting Amazon response / paid invoice document if requested."},
+        {"label": "Invoice", "value": "Paid", "tone": "green", "note": "Remaining Amit payment completed; official paid-in-full document requested from Amit and Allen."},
         {"label": "TikTok Shop", "value": "Draft" if "draft" in parsed["tiktok_shop"].get("Status", "").lower() else parsed["tiktok_shop"].get("Status", "Draft"), "tone": "amber", "note": parsed["tiktok_shop"].get("Needs", "Needs product images before review")},
         {"label": "Inventory", "value": parsed["inventory"].get("On hand", "250 units").replace(" units", ""), "tone": "blue", "note": "On hand / production per TomMemory"},
     ]
+    data["blockers"]["columns"] = [
+        {"title": "Waiting", "cards": [
+            {"title": "Amazon reinstatement", "body": "Appeal work submitted / moved forward; monitor Account Health and keep the official paid invoice ready."},
+            {"title": "TikTok listing submission", "body": "Still needs final product images before clean review submission."},
+        ]},
+        {"title": "In motion", "cards": [
+            {"title": "Influencer retouch sprint", "body": "First retouch sent; remaining creator follow-ups scheduled with reply checks and 25 minute spacing."},
+            {"title": "Google data access", "body": "Combined OAuth restored Gmail, Workspace, GA4, and Search Console so live dashboard pulls work again."},
+        ]},
+        {"title": "Ready", "cards": [
+            {"title": "Shopify DTC", "body": "Live storefront remains the initial conversion hub."},
+            {"title": "Website + SEO base", "body": "getmaintane.com live with GA4, Search Console, and refreshed today-so-far analytics."},
+        ]},
+    ]
     data["channels"] = [
         {"title": "Shopify DTC", "rows": [["Store", parsed["shopify"].get("Store URL", "maintane-2.myshopify.com")], ["Custom domain", parsed["shopify"].get("Custom domain", "shop.getmaintane.com")], ["Status", parsed["shopify"].get("Status", "Live"), normalize_status(parsed["shopify"].get("Status", "Live"))], ["Price", parsed["shopify"].get("Price", "$39.99 retail / $59.99 compare-at")], ["Apps", parsed["shopify"].get("Apps installed", "Klaviyo · Judge.me · Collabs")]]},
-        {"title": "Amazon FBA", "rows": [["Status", parsed["amazon"].get("Status", "Pending reinstatement"), "block"], ["Case", first(r"Case #(\d+)", parsed["amazon"].get("Status", ""), "19511671511")], ["Seller ID", parsed["amazon"].get("Seller ID", "A3FXI24FIY5G9I")], ["Allocation", parsed["amazon"].get("Inventory allocation", "225 units")], ["Next", "Submit paid invoice appeal"]]},
+        {"title": "Amazon FBA", "rows": [["Status", "Appeal submitted / awaiting Amazon response", "warn"], ["Case", first(r"Case #(\d+)", parsed["amazon"].get("Status", ""), "19511671511")], ["Seller ID", parsed["amazon"].get("Seller ID", "A3FXI24FIY5G9I")], ["Allocation", parsed["amazon"].get("Inventory allocation", "225 units")], ["Next", "Monitor Account Health and keep official paid invoice ready"]]},
         {"title": "TikTok Shop", "rows": [["Status", parsed["tiktok_shop"].get("Status", "Approved · draft"), "warn"], ["Category", parsed["tiktok_shop"].get("Category", "Home Supplies")], ["Affiliate", parsed["tiktok_shop"].get("Affiliate", "15% post-launch")], ["Stock", parsed["tiktok_shop"].get("Stock", "225 units, SKU: MTN-001")], ["Need", parsed["tiktok_shop"].get("Needs", "Product images")]]},
     ]
     data["influencers"]["metrics"] = [
