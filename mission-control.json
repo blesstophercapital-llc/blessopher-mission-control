@@ -2,7 +2,7 @@
   "meta": {
     "title": "Maintane Mission Control",
     "subtitle": "Blessopher Capital operating cockpit",
-    "updatedLabel": "Updated Thu May 7 · 9:50 PM EDT",
+    "updatedLabel": "Updated Thu May 7 · 10:21 PM EDT",
     "source": "~/TomMemory",
     "siteUrl": "https://getmaintane.com",
     "cloudflareNote": "Cloudflare Pages deploys from GitHub main when connected."
@@ -15,57 +15,294 @@
     "needleSupport": "No paid invoice, no reinstatement packet. No reinstatement, Amazon stays blocked. Everything else is secondary until this chain is done."
   },
   "overviewMetrics": [
-    {"label": "Launch readiness", "value": "62%", "tone": "amber", "note": "DTC live; Amazon/TikTok gated by invoice + images."},
-    {"label": "Active blockers", "value": "4", "tone": "red", "note": "Amit payment, invoice, Amazon appeal, TikTok images."},
-    {"label": "Vetted creators", "value": "76", "tone": "blue", "note": "57 email contacts; 34 DM-only; 25 seeding units planned."},
-    {"label": "Launch price", "value": "$39.99", "tone": "green", "note": "Review velocity first; margin still strong."}
+    {
+      "label": "Launch readiness",
+      "value": "70%",
+      "tone": "amber",
+      "note": "DTC live; Amazon/TikTok gated by invoice + images."
+    },
+    {
+      "label": "Active blockers",
+      "value": "4",
+      "tone": "red",
+      "note": "Counted from current critical/high TomMemory tasks."
+    },
+    {
+      "label": "Vetted creators",
+      "value": "76",
+      "tone": "blue",
+      "note": "57 email contacts; 34 DM-only; 25 seeding units planned."
+    },
+    {
+      "label": "Launch price",
+      "value": "$39.99",
+      "tone": "green",
+      "note": "Review velocity first; margin still strong."
+    }
   ],
   "quickActions": [
-    {"title": "Amazon appeal packet", "description": "Checklist + sequence", "prompt": "Draft the exact Amazon appeal checklist for Maintane using the paid invoice, FBA shipment plan, and case #19511671511."},
-    {"title": "Influencer sprint", "description": "Creators + outreach angle", "prompt": "Prioritize the Maintane influencer pipeline. Who should I contact first and what should I say?"},
-    {"title": "Tomorrow’s content", "description": "Hook + carousel direction", "prompt": "What is the single highest ROI Maintane content post to publish tomorrow? Use the carousel rules."}
+    {
+      "title": "Amazon appeal packet",
+      "description": "Checklist + sequence",
+      "prompt": "Draft the exact Amazon appeal checklist for Maintane using the paid invoice, FBA shipment plan, and case #19511671511."
+    },
+    {
+      "title": "Influencer sprint",
+      "description": "Creators + outreach angle",
+      "prompt": "Prioritize the Maintane influencer pipeline. Who should I contact first and what should I say?"
+    },
+    {
+      "title": "Tomorrow’s content",
+      "description": "Hook + carousel direction",
+      "prompt": "What is the single highest ROI Maintane content post to publish tomorrow? Use the carousel rules."
+    }
   ],
   "criticalTasks": [
-    {"priority": "Critical", "tone": "red", "text": "Pay remaining $250 to Amit via Zelle", "due": "May 8 · 8:00 AM"},
-    {"priority": "Critical", "tone": "red", "text": "Get paid invoice from Amit", "due": "May 8 · 8:30 AM"},
-    {"priority": "Critical", "tone": "red", "text": "Submit Amazon appeal with invoice attached", "due": "May 8 · 9:00 AM"},
-    {"priority": "High", "tone": "amber", "text": "Work influencer outreach", "due": "May 8"}
+    {
+      "priority": "Critical",
+      "tone": "red",
+      "text": "Pay remaining $250 to Amit via Zelle first thing",
+      "due": "May 8 · 8:00 AM"
+    },
+    {
+      "priority": "Critical",
+      "tone": "red",
+      "text": "Get paid invoice from Amit after Zelle payment",
+      "due": "May 8 · 8:30 AM"
+    },
+    {
+      "priority": "Critical",
+      "tone": "red",
+      "text": "Submit Amazon appeal with paid invoice attached",
+      "due": "May 8 · 9:00 AM"
+    },
+    {
+      "priority": "High",
+      "tone": "amber",
+      "text": "Work on influencer outreach for Maintane",
+      "due": "May 8"
+    }
   ],
   "recommendations": [
-    {"title": "Do not overbuild before Amazon appeal.", "meta": "The brand is ready enough. The bottleneck is channel activation, not more planning.", "badge": "Focus", "tone": "warn"},
-    {"title": "Use Discord as alert layer.", "meta": "Mission Control tracks state; Discord should only push reminders/exceptions.", "badge": "System", "tone": "info"},
-    {"title": "Influencers become priority after appeal submission.", "meta": "Keep creator commitments moving so seeding units convert to content.", "badge": "Next", "tone": "ok"}
+    {
+      "title": "Do not overbuild before Amazon appeal.",
+      "meta": "The brand is ready enough. The bottleneck is channel activation, not more planning.",
+      "badge": "Focus",
+      "tone": "warn"
+    },
+    {
+      "title": "Use Discord as alert layer.",
+      "meta": "Mission Control tracks state; Discord should only push reminders/exceptions.",
+      "badge": "System",
+      "tone": "info"
+    },
+    {
+      "title": "Influencers become priority after appeal submission.",
+      "meta": "Keep creator commitments moving so seeding units convert to content.",
+      "badge": "Next",
+      "tone": "ok"
+    }
   ],
   "blockers": {
     "metrics": [
-      {"label": "Amazon case", "value": "Blocked", "tone": "red", "note": "Case #19511671511"},
-      {"label": "Invoice", "value": "Pending", "tone": "amber", "note": "Amit / Invivo paid invoice required"},
-      {"label": "TikTok Shop", "value": "Draft", "tone": "amber", "note": "Needs product images before review"},
-      {"label": "Inventory", "value": "250", "tone": "blue", "note": "Production estimated around May 8"}
+      {
+        "label": "Amazon case",
+        "value": "Blocked",
+        "tone": "red",
+        "note": "Pending reinstatement (Case #19511671511)"
+      },
+      {
+        "label": "Invoice",
+        "value": "Pending",
+        "tone": "amber",
+        "note": "Amit / Invivo paid invoice required"
+      },
+      {
+        "label": "TikTok Shop",
+        "value": "Draft",
+        "tone": "amber",
+        "note": "Product images before submitting for review"
+      },
+      {
+        "label": "Inventory",
+        "value": "250",
+        "tone": "blue",
+        "note": "On hand / production per TomMemory"
+      }
     ],
     "columns": [
-      {"title": "Blocked", "cards": [{"title": "Amazon reinstatement", "body": "Pay Amit → paid invoice → FBA shipment plan → appeal resubmission."}, {"title": "TikTok listing submission", "body": "Cannot submit cleanly without final product images."}]},
-      {"title": "In motion", "cards": [{"title": "Invivo production", "body": "250 units in production. Supplier: Amit Choksi / Allen Rusk."}, {"title": "Influencer outreach", "body": "76 vetted creators; start with replied/applied contacts."}]},
-      {"title": "Ready", "cards": [{"title": "Shopify DTC", "body": "Live product, buy buttons active, free domestic shipping."}, {"title": "Website + SEO base", "body": "getmaintane.com live with 14 blog posts, GA4, Search Console."}]}
+      {
+        "title": "Blocked",
+        "cards": [
+          {
+            "title": "Amazon reinstatement",
+            "body": "Pay Amit → paid invoice → FBA shipment plan → appeal resubmission."
+          },
+          {
+            "title": "TikTok listing submission",
+            "body": "Cannot submit cleanly without final product images."
+          }
+        ]
+      },
+      {
+        "title": "In motion",
+        "cards": [
+          {
+            "title": "Invivo production",
+            "body": "250 units in production. Supplier: Amit Choksi / Allen Rusk."
+          },
+          {
+            "title": "Influencer outreach",
+            "body": "76 vetted creators; start with replied/applied contacts."
+          }
+        ]
+      },
+      {
+        "title": "Ready",
+        "cards": [
+          {
+            "title": "Shopify DTC",
+            "body": "Live product, buy buttons active, free domestic shipping."
+          },
+          {
+            "title": "Website + SEO base",
+            "body": "getmaintane.com live with 14 blog posts, GA4, Search Console."
+          }
+        ]
+      }
     ]
   },
   "channels": [
-    {"title": "Shopify DTC", "rows": [["Store", "maintane-2.myshopify.com"], ["Custom domain", "shop.getmaintane.com"], ["Status", "Live", "ok"], ["Price", "$39.99 / $59.99 compare-at"], ["Apps", "Klaviyo · Judge.me · Collabs"]]},
-    {"title": "Amazon FBA", "rows": [["Status", "Pending reinstatement", "block"], ["Case", "#19511671511"], ["Seller ID", "A3FXI24FIY5G9I"], ["Allocation", "225 units"], ["Next", "Submit paid invoice appeal"]]},
-    {"title": "TikTok Shop", "rows": [["Status", "Approved · draft", "warn"], ["Category", "Home Supplies"], ["Affiliate", "15% post-launch"], ["Stock", "225 units · MTN-001"], ["Need", "Product images"]]}
+    {
+      "title": "Shopify DTC",
+      "rows": [
+        [
+          "Store",
+          "maintane-2.myshopify.com"
+        ],
+        [
+          "Custom domain",
+          "shop.getmaintane.com"
+        ],
+        [
+          "Status",
+          "Live",
+          "ok"
+        ],
+        [
+          "Price",
+          "$39.99 retail / $59.99 compare-at"
+        ],
+        [
+          "Apps",
+          "Klaviyo, Judge.me, Shopify Collabs"
+        ]
+      ]
+    },
+    {
+      "title": "Amazon FBA",
+      "rows": [
+        [
+          "Status",
+          "Pending reinstatement (Case #19511671511)",
+          "block"
+        ],
+        [
+          "Case",
+          "19511671511"
+        ],
+        [
+          "Seller ID",
+          "A3FXI24FIY5G9I"
+        ],
+        [
+          "Allocation",
+          "225 units"
+        ],
+        [
+          "Next",
+          "Submit paid invoice appeal"
+        ]
+      ]
+    },
+    {
+      "title": "TikTok Shop",
+      "rows": [
+        [
+          "Status",
+          "Approved, listing drafted, saved as draft",
+          "warn"
+        ],
+        [
+          "Category",
+          "Home Supplies > Home Care Supplies > Household Cleaners > Drain Openers"
+        ],
+        [
+          "Affiliate",
+          "15% commission, to be enabled post-launch"
+        ],
+        [
+          "Stock",
+          "225 units, SKU: MTN-001"
+        ],
+        [
+          "Need",
+          "Product images before submitting for review"
+        ]
+      ]
+    }
   ],
   "influencers": {
     "metrics": [
-      {"label": "Total vetted", "value": "76", "note": "Creator pipeline"},
-      {"label": "Email contacts", "value": "57", "tone": "blue", "note": "Primary channel"},
-      {"label": "DM only", "value": "34", "tone": "amber", "note": "Secondary channel"},
-      {"label": "Seeding units", "value": "25", "tone": "green", "note": "USPS from Miami"}
+      {
+        "label": "Total vetted",
+        "value": "76",
+        "note": "Creator pipeline"
+      },
+      {
+        "label": "Email contacts",
+        "value": "57",
+        "tone": "blue",
+        "note": "Primary channel"
+      },
+      {
+        "label": "DM only",
+        "value": "34",
+        "tone": "amber",
+        "note": "Secondary channel"
+      },
+      {
+        "label": "Seeding units",
+        "value": "25",
+        "tone": "green",
+        "note": "USPS from Miami"
+      }
     ],
     "priorityContacts": [
-      {"name": "Derrick McClintock · @themantrainingshow", "meta": "115K · verified · Kauai · home builder · responded to DM", "badge": "Priority", "tone": "ok"},
-      {"name": "Cassandra Richerson", "meta": "15K · RV/outdoors/pet · Social Cat applicant", "badge": "Warm", "tone": "ok"},
-      {"name": "Poor Pumper Society", "meta": "239K · verified · septic professional · Texas", "badge": "Authority", "tone": "info"},
-      {"name": "Erika Nolan", "meta": "203K · 14% engagement · wants paid $2K reel + whitelisting", "badge": "Wave 2", "tone": "warn"}
+      {
+        "name": "Derrick McClintock (@themantrainingshow)",
+        "meta": "115K, verified, Kauai, home builder, responded to DM ✅",
+        "badge": "Warm",
+        "tone": "ok"
+      },
+      {
+        "name": "Erika Nolan (@the.holistic.homestead)",
+        "meta": "203K, 14% eng, wants paid ($2K reel + whitelisting), wave 2",
+        "badge": "Wave 2",
+        "tone": "warn"
+      },
+      {
+        "name": "@growingoutthebox",
+        "meta": "416K, verified, homesteads, likely wants paid, wave 2",
+        "badge": "Wave 2",
+        "tone": "warn"
+      },
+      {
+        "name": "Cassandra Richerson (Social Cat)",
+        "meta": "15K, RV/outdoors/pet, Edmond OK, applied ✅",
+        "badge": "Warm",
+        "tone": "ok"
+      }
     ],
     "outreachRules": [
       "Ask a qualifying question first: “Do you have septic at your place?”",
@@ -77,11 +314,46 @@
   },
   "content": {
     "metrics": [
-      {"label": "TikTok", "value": "5.4K", "tone": "green", "note": "28-day views · 80.4% For You"},
-      {"label": "Instagram best post", "value": "1,092", "tone": "blue", "note": "“4 Warning Signs”"},
-      {"label": "Cadence", "value": "3 PM", "note": "Daily TikTok + Instagram"}
+      {
+        "label": "TikTok",
+        "value": "5.4K",
+        "tone": "green",
+        "note": "28-day views · 80.4% For You, 16.2% Search"
+      },
+      {
+        "label": "Instagram best post",
+        "value": "1,092",
+        "tone": "blue",
+        "note": "\"4 Warning Signs\" — 1,092 views"
+      },
+      {
+        "label": "Cadence",
+        "value": "3:00 PM EST",
+        "note": "Daily TikTok + Instagram"
+      }
     ],
-    "pillars": [["Mistakes", "40–50%"], ["Consequences", "20–25%"], ["Mechanism", "15–20%"], ["Awareness", "10–15%"], ["Prevention", "5–10%"]],
+    "pillars": [
+      [
+        "Mistakes",
+        "40–50%"
+      ],
+      [
+        "Consequences",
+        "20–25%"
+      ],
+      [
+        "Mechanism",
+        "15–20%"
+      ],
+      [
+        "Awareness",
+        "10–15%"
+      ],
+      [
+        "Prevention",
+        "5–10%"
+      ]
+    ],
     "creativeRules": [
       "Make the viewer think: “am I doing this wrong?”",
       "4 slides max. Alternating Forest Green and Dark Bark.",
@@ -92,18 +364,89 @@
   },
   "finance": {
     "metrics": [
-      {"label": "COGS", "value": "$6.49", "tone": "green", "note": "Material/unit"},
-      {"label": "Amazon net", "value": "~$23.50", "tone": "green", "note": "At $39.99 after fees"},
-      {"label": "Shopify net", "value": "~$26.54", "tone": "green", "note": "After Shopify + MCF"},
-      {"label": "TikTok net", "value": "~$25.50", "tone": "green", "note": "After commission + shipping"}
+      {
+        "label": "COGS",
+        "value": "$6.49",
+        "tone": "green",
+        "note": "Material/unit"
+      },
+      {
+        "label": "Amazon net",
+        "value": "~$23.50",
+        "tone": "green",
+        "note": "At $39.99 after fees"
+      },
+      {
+        "label": "Shopify net",
+        "value": "~$26.54",
+        "tone": "green",
+        "note": "After Shopify + MCF"
+      },
+      {
+        "label": "TikTok net",
+        "value": "~$25.50",
+        "tone": "green",
+        "note": "After commission + shipping"
+      }
     ],
-    "priceLadder": [["Launch", "$39.99 · first 50 units / 0–24 reviews"], ["Growth", "$49.99 · 25 reviews"], ["Upper end", "$59.99 · 75 reviews"], ["Premium", "$74.99 · 100 reviews"]],
-    "consumerAngle": [["Monthly cost", "$6.67/month"], ["Core contrast", "$6.67/month vs $10k–$25k repair"], ["Positioning", "Premium wellness, kid & pet safe"], ["PPC", "No PPC weeks 1–2; $15–20/day week 3"]]
+    "priceLadder": [
+      [
+        "Launch",
+        "$39.99 · first 50 units / 0–24 reviews"
+      ],
+      [
+        "Growth",
+        "$49.99 · 25 reviews"
+      ],
+      [
+        "Upper end",
+        "$59.99 · 75 reviews"
+      ],
+      [
+        "Premium",
+        "$74.99 · 100 reviews"
+      ]
+    ],
+    "consumerAngle": [
+      [
+        "Monthly cost",
+        "$6.67/month"
+      ],
+      [
+        "Core contrast",
+        "$6.67/month vs $10k–$25k repair"
+      ],
+      [
+        "Positioning",
+        "Premium wellness, kid & pet safe"
+      ],
+      [
+        "PPC",
+        "No PPC weeks 1–2; $15–20/day week 3"
+      ]
+    ]
   },
   "tom": {
     "description": "Ask for launch decisions, appeal checklists, influencer scripts, content hooks, and channel priorities. The function prompt is updated from stale BioWonder context to current Maintane context.",
     "statusPrompt": "Give me a concise Maintane status update: what is live, what is blocked, and the next 5 actions.",
-    "dataSourceRows": [["Vault", "~/TomMemory"], ["Core note", "Maintane-brand-asset 4-19.md"], ["Tasks", "Tasks.md"], ["Content rules", "Maintane-Content-Strategy.md"]],
-    "sourceNote": "Dashboard content is loaded from mission-control.json, grounded in TomMemory as of Thu May 7, 2026."
+    "dataSourceRows": [
+      [
+        "Vault",
+        "~/TomMemory"
+      ],
+      [
+        "Core note",
+        "Maintane-brand-asset 4-19.md"
+      ],
+      [
+        "Tasks",
+        "Tasks.md"
+      ],
+      [
+        "Content rules",
+        "Maintane-Content-Strategy.md"
+      ]
+    ],
+    "sourceNote": "Dashboard content is generated from TomMemory into mission-control.json as of Thu May 7 · 10:21 PM EDT."
   }
 }
