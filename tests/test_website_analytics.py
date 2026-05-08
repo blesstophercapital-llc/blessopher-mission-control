@@ -129,13 +129,18 @@ class WebsiteAnalyticsTests(unittest.TestCase):
         self.assertIn('id="websiteAnalytics"', html)
         self.assertIn("data.websiteAnalytics", html)
 
-    def test_index_keeps_mobile_navigation_available(self):
+    def test_index_uses_mobile_hamburger_off_canvas_navigation(self):
         html = (ROOT / "index.html").read_text()
         self.assertIn("@media(max-width:1000px)", html)
-        self.assertIn(".app{display:block", html)
-        self.assertIn(".nav{display:flex", html)
-        self.assertIn("overflow-x:auto", html)
+        self.assertIn('class="menu-toggle"', html)
+        self.assertIn('id="mobileMenu"', html)
+        self.assertIn('id="menuBackdrop"', html)
+        self.assertIn("function toggleMenu()", html)
+        self.assertIn("function closeMenu()", html)
+        self.assertIn("transform:translateX(-104%)", html)
+        self.assertIn(".sidebar.open{transform:translateX(0)}", html)
         self.assertNotIn("@media(max-width:1000px){.sidebar{display:none}", html)
+        self.assertNotIn("overflow-x:auto", html)
 
 
 if __name__ == "__main__":
