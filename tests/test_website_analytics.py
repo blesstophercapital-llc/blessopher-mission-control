@@ -129,6 +129,14 @@ class WebsiteAnalyticsTests(unittest.TestCase):
         self.assertIn('id="websiteAnalytics"', html)
         self.assertIn("data.websiteAnalytics", html)
 
+    def test_index_keeps_mobile_navigation_available(self):
+        html = (ROOT / "index.html").read_text()
+        self.assertIn("@media(max-width:1000px)", html)
+        self.assertIn(".app{display:block", html)
+        self.assertIn(".nav{display:flex", html)
+        self.assertIn("overflow-x:auto", html)
+        self.assertNotIn("@media(max-width:1000px){.sidebar{display:none}", html)
+
 
 if __name__ == "__main__":
     unittest.main()
