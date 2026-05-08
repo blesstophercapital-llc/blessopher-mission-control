@@ -2,7 +2,7 @@
   "meta": {
     "title": "Maintane Mission Control",
     "subtitle": "Blessopher Capital operating cockpit",
-    "updatedLabel": "Updated Thu May 7 · 10:50 PM EDT",
+    "updatedLabel": "Updated Fri May 8 · 12:24 AM EDT",
     "source": "~/TomMemory",
     "siteUrl": "https://getmaintane.com",
     "cloudflareNote": "Cloudflare Pages deploys from GitHub main when connected."
@@ -447,10 +447,10 @@
         "Maintane-Content-Strategy.md"
       ]
     ],
-    "sourceNote": "Dashboard content is generated from TomMemory into mission-control.json as of Thu May 7 · 10:50 PM EDT."
+    "sourceNote": "Dashboard content is generated from TomMemory into mission-control.json as of Fri May 8 · 12:24 AM EDT."
   },
   "websiteAnalytics": {
-    "updatedLabel": "Pulled Thu May 7 · 10:50 PM EDT",
+    "updatedLabel": "Pulled Fri May 8 · 12:24 AM EDT",
     "ga4": {
       "propertyId": "532192988",
       "propertyName": "Maintane",
@@ -458,26 +458,26 @@
     },
     "searchConsole": {
       "siteUrl": "sc-domain:getmaintane.com",
-      "period": "2026-04-07 → 2026-05-07"
+      "period": "2026-04-08 → 2026-05-08"
     },
     "scorecards": [
       {
         "label": "GA4 active users",
-        "value": "271",
+        "value": "272",
         "tone": "blue",
-        "note": "383 sessions · 1,930 page views"
+        "note": "385 sessions · 1,931 page views"
       },
       {
         "label": "GA4 events",
-        "value": "6,702",
+        "value": "6,712",
         "tone": "green",
         "note": "Includes CTA impressions, nav clicks, scrolls, engagement."
       },
       {
         "label": "Search impressions",
-        "value": "1,495",
+        "value": "1,489",
         "tone": "amber",
-        "note": "Avg position 35.6 · CTR 0.07%"
+        "note": "Avg position 35.7 · CTR 0.07%"
       },
       {
         "label": "Search clicks",
@@ -499,7 +499,7 @@
       ],
       [
         "SEO readout",
-        "1,495 impressions / 1 clicks / rank 35.6",
+        "1,489 impressions / 1 clicks / rank 35.7",
         "warn"
       ],
       [
@@ -542,8 +542,8 @@
       ],
       [
         "/waitlist/",
-        "41",
-        "35"
+        "42",
+        "36"
       ],
       [
         "/products.html",
@@ -569,12 +569,12 @@
       ],
       [
         "Paid Social",
-        "50",
-        "47"
+        "51",
+        "48"
       ],
       [
         "Unassigned",
-        "48",
+        "49",
         "1"
       ],
       [
@@ -596,11 +596,11 @@
     "gaEvents": [
       [
         "page_view",
-        "1930"
+        "1931"
       ],
       [
         "checkout_cta_impression",
-        "1493"
+        "1498"
       ],
       [
         "user_engagement",
@@ -608,15 +608,15 @@
       ],
       [
         "scroll",
-        "554"
+        "555"
       ],
       [
         "session_start",
-        "384"
+        "385"
       ],
       [
         "first_visit",
-        "271"
+        "272"
       ],
       [
         "nav_click",
@@ -631,7 +631,7 @@
       [
         "maintane",
         "1",
-        "510",
+        "504",
         "0.20%",
         "4.7"
       ],
@@ -724,9 +724,9 @@
       [
         "http://getmaintane.com/",
         "0",
-        "54",
+        "48",
         "0.00%",
-        "7.3"
+        "7.1"
       ],
       [
         "https://getmaintane.com/blog/",
@@ -789,14 +789,14 @@
       [
         "MOBILE",
         "1",
-        "467",
-        "0.21%",
-        "26.8"
+        "463",
+        "0.22%",
+        "26.9"
       ],
       [
         "DESKTOP",
         "0",
-        "1,025",
+        "1,023",
         "0.00%",
         "39.7"
       ],
@@ -807,6 +807,398 @@
         "0.00%",
         "8.3"
       ]
+    ]
+  },
+  "commandCenter": {
+    "diagnosis": "Traffic and search visibility exist; the next bottleneck is turning septic-homeowner intent into attributable, profitable orders and channel activation.",
+    "scorecards": [
+      {
+        "label": "Revenue",
+        "value": "Pending Shopify API",
+        "note": "Future source required; no fake sales metrics.",
+        "tone": "warn",
+        "source": "future:shopify"
+      },
+      {
+        "label": "Orders",
+        "value": "Pending Shopify API",
+        "note": "Requires Shopify order integration.",
+        "tone": "warn",
+        "source": "future:shopify"
+      },
+      {
+        "label": "Sessions",
+        "value": "385",
+        "note": "Last 30 days from GA4 when available.",
+        "tone": "blue",
+        "source": "ga4"
+      },
+      {
+        "label": "Search Impressions",
+        "value": "1,489",
+        "note": "Last 30 days from Search Console when available.",
+        "tone": "amber",
+        "source": "search_console"
+      },
+      {
+        "label": "Contribution Profit",
+        "value": "Pending Shopify API",
+        "note": "Calculated after order and channel costs are integrated.",
+        "tone": "warn",
+        "source": "future:shopify"
+      },
+      {
+        "label": "Channel Status",
+        "value": "DTC live; Amazon/TikTok pending",
+        "note": "Based on Maintane brand asset, not sales data.",
+        "tone": "amber",
+        "source": "TomMemory"
+      }
+    ],
+    "primaryBottleneck": {
+      "title": "Attribution and channel activation",
+      "status": "Blocked by pending commerce APIs and marketplace setup",
+      "nextAction": "Keep DTC live, submit Amazon appeal, finish TikTok assets, and add UTMs before scaling traffic.",
+      "tone": "warn"
+    },
+    "nextActions": [
+      "Submit Amazon appeal only with paid invoice attached.",
+      "Instrument product CTA, checkout start, and purchase events before judging funnel conversion.",
+      "Tag influencer, TikTok, paid social, and email links with UTMs before launch traffic spikes."
+    ]
+  },
+  "revenueFunnel": {
+    "diagnosis": "Top-of-funnel visibility is measurable; commerce conversion steps remain pending until Shopify and explicit GA4 events are wired.",
+    "stages": [
+      {
+        "label": "Sessions",
+        "value": "385",
+        "status": "active",
+        "source": "ga4",
+        "tone": "blue"
+      },
+      {
+        "label": "Product / intent page views",
+        "value": "1,931 page views",
+        "status": "partial",
+        "source": "ga4",
+        "tone": "blue",
+        "note": "Use explicit product/intent page grouping in future."
+      },
+      {
+        "label": "CTA clicks",
+        "value": "Pending GA4 event instrumentation",
+        "status": "pending",
+        "source": "future:ga4_event",
+        "tone": "warn"
+      },
+      {
+        "label": "Checkout starts",
+        "value": "Pending Shopify API",
+        "status": "pending",
+        "source": "future:shopify",
+        "tone": "warn"
+      },
+      {
+        "label": "Orders",
+        "value": "Pending Shopify API",
+        "status": "pending",
+        "source": "future:shopify",
+        "tone": "warn"
+      },
+      {
+        "label": "Repeat/subscription intent",
+        "value": "Pending Klaviyo/subscription source",
+        "status": "pending",
+        "source": "future:klaviyo",
+        "tone": "warn"
+      }
+    ],
+    "missingInstrumentation": [
+      "CTA clicks require a named GA4 event on product and content CTAs.",
+      "Checkout starts require Shopify API or GA4 checkout event instrumentation.",
+      "Orders and revenue require Shopify API; do not infer from traffic."
+    ]
+  },
+  "seoOpportunities": {
+    "scorecards": [
+      {
+        "label": "Search impressions",
+        "value": "1,489",
+        "tone": "amber",
+        "source": "search_console"
+      },
+      {
+        "label": "Search clicks",
+        "value": "1",
+        "tone": "red",
+        "source": "search_console"
+      },
+      {
+        "label": "Tracked opportunities",
+        "value": "8",
+        "tone": "blue",
+        "source": "generated"
+      }
+    ],
+    "opportunities": [
+      {
+        "query": "maintane",
+        "impressions": "504",
+        "clicks": "1",
+        "ctr": "0.20%",
+        "position": "4.7",
+        "bucket": "Brand Defense",
+        "recommendedAction": "Defend branded title/snippet.",
+        "source": "search_console"
+      },
+      {
+        "query": "a bacteria living in an underground septic tank",
+        "impressions": "3",
+        "clicks": "0",
+        "ctr": "0.00%",
+        "position": "69.7",
+        "bucket": "Long Shot",
+        "recommendedAction": "Refresh or build content targeting this query cluster.",
+        "source": "search_console"
+      },
+      {
+        "query": "average cost for septic tank cleaning",
+        "impressions": "1",
+        "clicks": "0",
+        "ctr": "0.00%",
+        "position": "62.0",
+        "bucket": "Long Shot",
+        "recommendedAction": "Refresh or build content targeting this query cluster.",
+        "source": "search_console"
+      },
+      {
+        "query": "average cost to clean septic tank",
+        "impressions": "1",
+        "clicks": "0",
+        "ctr": "0.00%",
+        "position": "51.0",
+        "bucket": "Long Shot",
+        "recommendedAction": "Refresh or build content targeting this query cluster.",
+        "source": "search_console"
+      },
+      {
+        "query": "average septic tank cleaning cost",
+        "impressions": "1",
+        "clicks": "0",
+        "ctr": "0.00%",
+        "position": "82.0",
+        "bucket": "Long Shot",
+        "recommendedAction": "Refresh or build content targeting this query cluster.",
+        "source": "search_console"
+      },
+      {
+        "query": "bacteria for septic tank",
+        "impressions": "1",
+        "clicks": "0",
+        "ctr": "0.00%",
+        "position": "87.0",
+        "bucket": "Long Shot",
+        "recommendedAction": "Refresh or build content targeting this query cluster.",
+        "source": "search_console"
+      },
+      {
+        "query": "bacteria for septic tank treatment",
+        "impressions": "1",
+        "clicks": "0",
+        "ctr": "0.00%",
+        "position": "94.0",
+        "bucket": "Long Shot",
+        "recommendedAction": "Refresh or build content targeting this query cluster.",
+        "source": "search_console"
+      },
+      {
+        "query": "bacteria for septic tanks",
+        "impressions": "1",
+        "clicks": "0",
+        "ctr": "0.00%",
+        "position": "89.0",
+        "bucket": "Long Shot",
+        "recommendedAction": "Refresh or build content targeting this query cluster.",
+        "source": "search_console"
+      }
+    ],
+    "queryBuckets": [
+      {
+        "bucket": "Brand Defense",
+        "count": 1
+      },
+      {
+        "bucket": "Quick Win",
+        "count": 0
+      },
+      {
+        "bucket": "Build Authority",
+        "count": 0
+      },
+      {
+        "bucket": "Long Shot",
+        "count": 11
+      },
+      {
+        "bucket": "Monitor",
+        "count": 0
+      }
+    ],
+    "actions": [
+      "Prioritize position 4–15 queries first: title/meta refresh, FAQ block, and internal links.",
+      "Turn position 16–50 queries into authority pages and comparison content.",
+      "Protect branded search by making homepage snippets unmistakably Maintane and purchase-oriented."
+    ]
+  },
+  "channelOps": {
+    "channels": [
+      {
+        "channel": "Shopify/DTC",
+        "status": "Live storefront; sales metrics pending",
+        "blocker": "Pending Shopify API for orders/revenue",
+        "nextAction": "Wire Shopify API and purchase events before scaling spend.",
+        "tone": "ok",
+        "source": "future:shopify"
+      },
+      {
+        "channel": "Amazon",
+        "status": "Pending reinstatement",
+        "blocker": "Paid invoice and appeal packet",
+        "nextAction": "Submit appeal with paid invoice and case details.",
+        "tone": "block",
+        "source": "future:amazon"
+      },
+      {
+        "channel": "TikTok Shop",
+        "status": "Approved account; listing draft",
+        "blocker": "Product images and future TikTok Shop API metrics",
+        "nextAction": "Finish product images, submit listing, then connect TikTok metrics.",
+        "tone": "warn",
+        "source": "future:tiktok"
+      },
+      {
+        "channel": "Influencers",
+        "status": "Pipeline built",
+        "blocker": "UTMs and committed creator shortlist",
+        "nextAction": "Contact warm creators and tag every link.",
+        "tone": "blue",
+        "source": "TomMemory"
+      },
+      {
+        "channel": "Email/Klaviyo",
+        "status": "App installed; performance pending",
+        "blocker": "Pending Klaviyo flow and API source",
+        "nextAction": "Create launch capture/abandon flows and connect Klaviyo metrics.",
+        "tone": "warn",
+        "source": "future:klaviyo"
+      }
+    ]
+  },
+  "unitEconomics": {
+    "price": "$39.99",
+    "cogs": "~$6.49",
+    "channels": [
+      {
+        "channel": "Shopify/DTC",
+        "net": "~$26.54",
+        "breakEvenCac": "~$26.54",
+        "targetCac": "≤ $13.25",
+        "source": "known economics"
+      },
+      {
+        "channel": "Amazon",
+        "net": "~$23.50",
+        "breakEvenCac": "~$23.50",
+        "targetCac": "≤ $11.75",
+        "source": "known economics; sales pending future:amazon"
+      },
+      {
+        "channel": "TikTok Shop",
+        "net": "~$25.50",
+        "breakEvenCac": "~$25.50",
+        "targetCac": "≤ $12.75",
+        "source": "known economics; sales pending future:tiktok"
+      }
+    ],
+    "breakEvenCac": "Use channel net as break-even CAC before overhead; live CAC pending ad/order integrations.",
+    "targetCac": "Target roughly 50% of channel net until repeat purchase data exists.",
+    "notes": [
+      "Known Maintane economics only: price $39.99, COGS ~$6.49, Shopify net ~$26.54, Amazon net ~$23.50, TikTok net ~$25.50.",
+      "No sales, conversion, CAC, or order volume is inferred without future Shopify/Amazon/TikTok sources."
+    ]
+  },
+  "actionQueue": {
+    "now": [
+      {
+        "title": "Submit Amazon appeal with paid invoice",
+        "kpi": "Amazon channel activation",
+        "impact": "High",
+        "owner": "Mr. Bless",
+        "status": "Now"
+      },
+      {
+        "title": "Instrument CTA and checkout-start events",
+        "kpi": "Funnel attribution",
+        "impact": "High",
+        "owner": "Tom / Mr. Bless",
+        "status": "Now"
+      },
+      {
+        "title": "Add UTMs to influencer, TikTok, email, and paid links",
+        "kpi": "Attribution",
+        "impact": "High",
+        "owner": "Mr. Bless / Tom",
+        "status": "Now"
+      }
+    ],
+    "next": [
+      {
+        "title": "Build SEO briefs for high-impression septic queries",
+        "kpi": "Organic clicks",
+        "impact": "Medium",
+        "owner": "Tom",
+        "status": "Next"
+      },
+      {
+        "title": "Connect Shopify orders/revenue API",
+        "kpi": "Revenue visibility",
+        "impact": "High",
+        "owner": "Mr. Bless / Dev",
+        "status": "Next"
+      }
+    ],
+    "waiting": [
+      {
+        "title": "Pull Amazon order/ad metrics",
+        "kpi": "Marketplace profit",
+        "impact": "High",
+        "owner": "Future Amazon API",
+        "status": "Waiting"
+      },
+      {
+        "title": "Pull TikTok Shop order metrics",
+        "kpi": "Creator commerce",
+        "impact": "Medium",
+        "owner": "Future TikTok source",
+        "status": "Waiting"
+      },
+      {
+        "title": "Pull Klaviyo email revenue metrics",
+        "kpi": "Retention",
+        "impact": "Medium",
+        "owner": "Future Klaviyo source",
+        "status": "Waiting"
+      }
+    ],
+    "done": [
+      {
+        "title": "Keep website analytics and Search Console in data contract",
+        "kpi": "Visibility",
+        "impact": "Medium",
+        "owner": "Tom",
+        "status": "Done"
+      }
     ]
   }
 }

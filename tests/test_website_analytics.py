@@ -1,4 +1,5 @@
 import importlib.util
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -27,9 +28,103 @@ class WebsiteAnalyticsTests(unittest.TestCase):
         self.assertGreaterEqual(len(analytics["actions"]), 3)
         self.assertTrue(any("SEO" in item[0] or "Search" in item[0] for item in analytics["diagnostics"]))
 
-    def test_index_has_left_nav_and_renders_website_analytics_page(self):
+    def test_generated_data_contains_v1_operating_sections(self):
+        generator = load_generator()
+        data = generator.build_data(Path("/Users/christopherbless/TomMemory"), ROOT / "mission-control.json")
+
+        for key in [
+            "commandCenter",
+            "revenueFunnel",
+            "websiteAnalytics",
+            "seoOpportunities",
+            "channelOps",
+            "unitEconomics",
+            "actionQueue",
+        ]:
+            self.assertIn(key, data)
+
+        self.assertGreaterEqual(len(data["commandCenter"]["scorecards"]), 4)
+        self.assertGreaterEqual(len(data["revenueFunnel"]["stages"]), 5)
+        self.assertGreaterEqual(len(data["seoOpportunities"]["opportunities"]), 3)
+        self.assertGreaterEqual(len(data["actionQueue"]["now"]), 3)
+
+    def test_v1_sections_have_required_fields_and_honest_pending_placeholders(self):
+        generator = load_generator()
+        data = generator.build_data(Path("/Users/christopherbless/TomMemory"), ROOT / "mission-control.json")
+
+        command_center = data["commandCenter"]
+        self.assertTrue({"diagnosis", "scorecards", "primaryBottleneck", "nextActions"}.issubset(command_center))
+        for card in command_center["scorecards"]:
+            self.assertTrue({"label", "value", "tone", "source"}.issubset(card))
+        future_cards = [card for card in command_center["scorecards"] if "Revenue" in card["label"] or "Orders" in card["label"] or "Contribution Profit" in card["label"]]
+        self.assertTrue(future_cards)
+        for card in future_cards:
+            self.assertIn("Pending", card["value"])
+            self.assertTrue(card["source"].startswith("future:"))
+
+        revenue_funnel = data["revenueFunnel"]
+        self.assertTrue({"diagnosis", "stages", "missingInstrumentation"}.issubset(revenue_funnel))
+        for stage in revenue_funnel["stages"]:
+            self.assertTrue({"label", "value", "status", "source", "tone"}.issubset(stage))
+        pending_stages = [stage for stage in revenue_funnel["stages"] if stage["status"] == "pending"]
+        self.assertTrue(pending_stages)
+        for stage in pending_stages:
+            self.assertIn("Pending", stage["value"])
+            self.assertTrue(stage["source"].startswith("future:"))
+
+        expected_action_columns = {"now", "next", "waiting", "done"}
+        self.assertEqual(set(data["actionQueue"]), expected_action_columns)
+        for column in expected_action_columns:
+            for action in data["actionQueue"][column]:
+                self.assertTrue({"title", "kpi", "impact", "owner", "status"}.issubset(action))
+
+    def test_fresh_output_path_builds_complete_data_model(self):
+        generator = load_generator()
+        with tempfile.TemporaryDirectory() as tmpdir:
+            fresh_output = Path(tmpdir) / "mission-control-fresh.json"
+            data = generator.build_data(Path("/Users/christopherbless/TomMemory"), fresh_output)
+
+        for key in ["blockers", "influencers", "content", "finance", "tom", "commandCenter", "revenueFunnel", "seoOpportunities", "actionQueue"]:
+            self.assertIn(key, data)
+        self.assertGreaterEqual(len(data["blockers"]["columns"]), 3)
+        self.assertGreaterEqual(len(data["blockers"]["metrics"]), 4)
+        self.assertGreaterEqual(len(data["content"]["pillars"]), 5)
+        self.assertGreaterEqual(len(data["finance"]["priceLadder"]), 4)
+
+    def test_seo_bucket_boundaries_and_counts_are_consistent(self):
+        generator = load_generator()
+        self.assertEqual(generator._seo_bucket("maintane", 80.0, 1), "Brand Defense")
+        self.assertEqual(generator._seo_bucket("septic treatment", 4.0, 1), "Quick Win")
+        self.assertEqual(generator._seo_bucket("septic treatment", 49.9, 1), "Build Authority")
+        self.assertEqual(generator._seo_bucket("septic treatment", 50.0, 1), "Long Shot")
+
+        seo = generator.build_seo_opportunities({"websiteAnalytics": generator._default_website_analytics()})
+        tracked = next(card for card in seo["scorecards"] if card["label"] == "Tracked opportunities")
+        self.assertEqual(int(tracked["value"]), len(seo["opportunities"]))
+        bucket_counts = {item["bucket"]: item["count"] for item in seo["queryBuckets"]}
+        self.assertEqual(bucket_counts["Build Authority"], 2)
+        self.assertEqual(bucket_counts["Brand Defense"], 1)
+
+    def test_index_has_v1_left_nav_and_renders_website_analytics_page(self):
         html = (ROOT / "index.html").read_text()
+        for page_id in [
+            "commandCenter",
+            "revenueFunnel",
+            "seoOpportunities",
+            "channelOps",
+            "unitEconomics",
+            "actionQueue",
+        ]:
+            self.assertIn(f'data-page="{page_id}"', html)
+            self.assertIn(f'id="{page_id}"', html)
+
         self.assertIn('data-page="websiteAnalytics"', html)
+        self.assertIn("Command Center", html)
+        self.assertIn("Revenue Funnel", html)
+        self.assertIn("SEO Opportunities", html)
+        self.assertIn("Channel Ops", html)
+        self.assertIn("Unit Economics", html)
+        self.assertIn("Action Queue", html)
         self.assertIn("Website Analytics", html)
         self.assertIn('id="websiteAnalytics"', html)
         self.assertIn("data.websiteAnalytics", html)

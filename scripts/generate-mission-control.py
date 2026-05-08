@@ -348,6 +348,273 @@ def fetch_website_analytics(existing: dict[str, Any]) -> dict[str, Any]:
         return existing.get("websiteAnalytics") or _default_website_analytics()
 
 
+def _metric_from_scorecards(analytics: dict[str, Any], label_part: str, default: str = "—") -> str:
+    for card in analytics.get("scorecards", []):
+        if label_part.lower() in card.get("label", "").lower():
+            return card.get("value", default)
+    return default
+
+
+def _sessions_from_analytics(analytics: dict[str, Any]) -> str:
+    sessions = _metric_from_scorecards(analytics, "sessions")
+    if sessions != "—":
+        return sessions
+    for card in analytics.get("scorecards", []):
+        match = re.search(r"([0-9,]+)\s+sessions", card.get("note", ""), re.I)
+        if match:
+            return match.group(1)
+    return "—"
+
+
+def _parse_display_number(value: Any) -> float:
+    try:
+        return float(str(value).replace(",", "").replace("%", ""))
+    except (TypeError, ValueError):
+        return 0.0
+
+
+def _seo_bucket(query: str, position: float, impressions: float) -> str:
+    if "maintane" in query.lower():
+        return "Brand Defense"
+    if 4 <= position <= 15 and impressions > 0:
+        return "Quick Win"
+    if 16 <= position < 50 and impressions > 0:
+        return "Build Authority"
+    if position >= 50:
+        return "Long Shot"
+    return "Monitor"
+
+
+def _ensure_base_sections(data: dict[str, Any]) -> dict[str, Any]:
+    """Populate static dashboard sections needed when no output JSON exists yet.
+
+    The generator refreshes volatile metrics from TomMemory, but the V1 UI also
+    contains mostly-static cards/lists that historically lived in the checked-in
+    JSON. Keep those sections present for fresh output paths while preserving any
+    richer existing generated content when mission-control.json already exists.
+    """
+    data.setdefault("blockers", {})
+    data["blockers"].setdefault("columns", [
+        {"title": "Blocked", "cards": [
+            {"title": "Amazon reinstatement", "body": "Pay supplier invoice, attach paid invoice, then resubmit the Amazon appeal."},
+            {"title": "TikTok listing submission", "body": "Complete final product images before submitting the listing for review."},
+        ]},
+        {"title": "In motion", "cards": [
+            {"title": "Invivo production", "body": "Keep production, invoice, and shipment-plan tasks moving."},
+            {"title": "Influencer outreach", "body": "Prioritize warm creators and track UTMs before seeding."},
+        ]},
+        {"title": "Ready", "cards": [
+            {"title": "Shopify DTC", "body": "Live storefront remains the initial conversion hub."},
+            {"title": "Website + SEO base", "body": "GA4/Search Console data contract is ready when tokens are available."},
+        ]},
+    ])
+    data.setdefault("influencers", {})
+    data["influencers"].setdefault("priorityContacts", [])
+    data["influencers"].setdefault("outreachRules", [
+        "Ask whether the creator or audience has septic before offering product.",
+        "Offer a free jar plus affiliate upside; tag every link with UTMs.",
+        "Prioritize email first, then Instagram DM follow-up.",
+    ])
+    data.setdefault("content", {})
+    data["content"].setdefault("pillars", [
+        ["Mistakes", "40–50%"],
+        ["Consequences", "20–25%"],
+        ["Mechanism", "15–20%"],
+        ["Awareness", "10–15%"],
+        ["Prevention", "5–10%"],
+    ])
+    data["content"].setdefault("creativeRules", [
+        "Lead with the mistake or financial consequence.",
+        "Keep hooks direct and septic-homeowner specific.",
+        "Use Maintane as the simple monthly maintenance step.",
+    ])
+    data.setdefault("finance", {})
+    data["finance"].setdefault("priceLadder", [
+        ["Launch", "$39.99 · first 50 units / 0–24 reviews"],
+        ["Growth", "$49.99 · 25 reviews"],
+        ["Upper end", "$59.99 · 75 reviews"],
+        ["Premium", "$74.99 · 100 reviews"],
+    ])
+    data["finance"].setdefault("consumerAngle", [
+        ["Monthly cost", "$6.67/month"],
+        ["Core contrast", "$6.67/month vs $10k–$25k repair"],
+        ["Positioning", "Premium wellness, kid & pet safe"],
+        ["PPC", "No PPC weeks 1–2; test only after attribution exists"],
+    ])
+    data.setdefault("tom", {})
+    data["tom"].setdefault("description", "Ask for Maintane launch decisions, appeal checklists, influencer scripts, content hooks, and channel priorities.")
+    data["tom"].setdefault("statusPrompt", "Give me a concise Maintane status update: what is live, what is blocked, and the next 5 actions.")
+    data["tom"].setdefault("dataSourceRows", [
+        ["Vault", "~/TomMemory"],
+        ["Core note", "Maintane-brand-asset 4-19.md"],
+        ["Tasks", "Tasks.md"],
+        ["Content rules", "Maintane-Content-Strategy.md"],
+    ])
+    return data
+
+
+def build_command_center(data: dict[str, Any]) -> dict[str, Any]:
+    analytics = data.get("websiteAnalytics", {})
+    sessions = _sessions_from_analytics(analytics)
+    impressions = _metric_from_scorecards(analytics, "Search impressions")
+    return {
+        "diagnosis": "Traffic and search visibility exist; the next bottleneck is turning septic-homeowner intent into attributable, profitable orders and channel activation.",
+        "scorecards": [
+            {"label": "Revenue", "value": "Pending Shopify API", "note": "Future source required; no fake sales metrics.", "tone": "warn", "source": "future:shopify"},
+            {"label": "Orders", "value": "Pending Shopify API", "note": "Requires Shopify order integration.", "tone": "warn", "source": "future:shopify"},
+            {"label": "Sessions", "value": sessions, "note": "Last 30 days from GA4 when available.", "tone": "blue", "source": "ga4"},
+            {"label": "Search Impressions", "value": impressions, "note": "Last 30 days from Search Console when available.", "tone": "amber", "source": "search_console"},
+            {"label": "Contribution Profit", "value": "Pending Shopify API", "note": "Calculated after order and channel costs are integrated.", "tone": "warn", "source": "future:shopify"},
+            {"label": "Channel Status", "value": "DTC live; Amazon/TikTok pending", "note": "Based on Maintane brand asset, not sales data.", "tone": "amber", "source": "TomMemory"},
+        ],
+        "primaryBottleneck": {
+            "title": "Attribution and channel activation",
+            "status": "Blocked by pending commerce APIs and marketplace setup",
+            "nextAction": "Keep DTC live, submit Amazon appeal, finish TikTok assets, and add UTMs before scaling traffic.",
+            "tone": "warn",
+        },
+        "nextActions": [
+            "Submit Amazon appeal only with paid invoice attached.",
+            "Instrument product CTA, checkout start, and purchase events before judging funnel conversion.",
+            "Tag influencer, TikTok, paid social, and email links with UTMs before launch traffic spikes.",
+        ],
+    }
+
+
+def build_revenue_funnel(data: dict[str, Any]) -> dict[str, Any]:
+    analytics = data.get("websiteAnalytics", {})
+    sessions = _sessions_from_analytics(analytics)
+    page_views = "Pending GA4 event mapping"
+    for card in analytics.get("scorecards", []):
+        note = card.get("note", "")
+        if "page views" in note:
+            page_views = note.split("·")[-1].strip()
+            break
+    return {
+        "diagnosis": "Top-of-funnel visibility is measurable; commerce conversion steps remain pending until Shopify and explicit GA4 events are wired.",
+        "stages": [
+            {"label": "Sessions", "value": sessions, "status": "active", "source": "ga4", "tone": "blue"},
+            {"label": "Product / intent page views", "value": page_views, "status": "partial", "source": "ga4", "tone": "blue", "note": "Use explicit product/intent page grouping in future."},
+            {"label": "CTA clicks", "value": "Pending GA4 event instrumentation", "status": "pending", "source": "future:ga4_event", "tone": "warn"},
+            {"label": "Checkout starts", "value": "Pending Shopify API", "status": "pending", "source": "future:shopify", "tone": "warn"},
+            {"label": "Orders", "value": "Pending Shopify API", "status": "pending", "source": "future:shopify", "tone": "warn"},
+            {"label": "Repeat/subscription intent", "value": "Pending Klaviyo/subscription source", "status": "pending", "source": "future:klaviyo", "tone": "warn"},
+        ],
+        "missingInstrumentation": [
+            "CTA clicks require a named GA4 event on product and content CTAs.",
+            "Checkout starts require Shopify API or GA4 checkout event instrumentation.",
+            "Orders and revenue require Shopify API; do not infer from traffic.",
+        ],
+    }
+
+
+def build_seo_opportunities(data: dict[str, Any]) -> dict[str, Any]:
+    analytics = data.get("websiteAnalytics", {})
+    opportunities: list[dict[str, Any]] = []
+    buckets: dict[str, int] = {"Brand Defense": 0, "Quick Win": 0, "Build Authority": 0, "Long Shot": 0, "Monitor": 0}
+    for row in analytics.get("gscTopQueries", []):
+        query = row[0] if row else ""
+        clicks = row[1] if len(row) > 1 else "0"
+        impressions = row[2] if len(row) > 2 else "0"
+        ctr = row[3] if len(row) > 3 else "0.00%"
+        position = row[4] if len(row) > 4 else "—"
+        impression_num = _parse_display_number(impressions)
+        position_num = _parse_display_number(position)
+        bucket = _seo_bucket(query, position_num, impression_num)
+        buckets[bucket] = buckets.get(bucket, 0) + 1
+        if bucket != "Monitor":
+            opportunities.append({
+                "query": query,
+                "impressions": impressions,
+                "clicks": clicks,
+                "ctr": ctr,
+                "position": position,
+                "bucket": bucket,
+                "recommendedAction": "Defend branded title/snippet." if bucket == "Brand Defense" else "Refresh or build content targeting this query cluster.",
+                "source": "search_console",
+            })
+    fallback_opportunities = [
+        {"query": "septic tank cleaning cost", "impressions": "Pending Search Console", "clicks": "Pending Search Console", "ctr": "Pending Search Console", "position": "Pending Search Console", "bucket": "Build Authority", "recommendedAction": "Create or refresh a cost-focused SEO page with Maintane CTA.", "source": "future:search_console"},
+        {"query": "septic bacteria treatment", "impressions": "Pending Search Console", "clicks": "Pending Search Console", "ctr": "Pending Search Console", "position": "Pending Search Console", "bucket": "Build Authority", "recommendedAction": "Build mechanism content around bacteria and monthly maintenance.", "source": "future:search_console"},
+        {"query": "maintane", "impressions": "Pending Search Console", "clicks": "Pending Search Console", "ctr": "Pending Search Console", "position": "Pending Search Console", "bucket": "Brand Defense", "recommendedAction": "Keep homepage title/meta tightly branded and conversion-oriented.", "source": "future:search_console"},
+    ]
+    while len(opportunities) < 3:
+        fallback = fallback_opportunities[len(opportunities)]
+        opportunities.append(fallback)
+        buckets[fallback["bucket"]] = buckets.get(fallback["bucket"], 0) + 1
+    visible_opportunities = opportunities[:8]
+    return {
+        "scorecards": [
+            {"label": "Search impressions", "value": _metric_from_scorecards(analytics, "Search impressions"), "tone": "amber", "source": "search_console"},
+            {"label": "Search clicks", "value": _metric_from_scorecards(analytics, "Search clicks"), "tone": "red", "source": "search_console"},
+            {"label": "Tracked opportunities", "value": str(len(visible_opportunities)), "tone": "blue", "source": "generated"},
+        ],
+        "opportunities": visible_opportunities,
+        "queryBuckets": [{"bucket": key, "count": value} for key, value in buckets.items()],
+        "actions": [
+            "Prioritize position 4–15 queries first: title/meta refresh, FAQ block, and internal links.",
+            "Turn position 16–50 queries into authority pages and comparison content.",
+            "Protect branded search by making homepage snippets unmistakably Maintane and purchase-oriented.",
+        ],
+    }
+
+
+def build_channel_ops(data: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "channels": [
+            {"channel": "Shopify/DTC", "status": "Live storefront; sales metrics pending", "blocker": "Pending Shopify API for orders/revenue", "nextAction": "Wire Shopify API and purchase events before scaling spend.", "tone": "ok", "source": "future:shopify"},
+            {"channel": "Amazon", "status": "Pending reinstatement", "blocker": "Paid invoice and appeal packet", "nextAction": "Submit appeal with paid invoice and case details.", "tone": "block", "source": "future:amazon"},
+            {"channel": "TikTok Shop", "status": "Approved account; listing draft", "blocker": "Product images and future TikTok Shop API metrics", "nextAction": "Finish product images, submit listing, then connect TikTok metrics.", "tone": "warn", "source": "future:tiktok"},
+            {"channel": "Influencers", "status": "Pipeline built", "blocker": "UTMs and committed creator shortlist", "nextAction": "Contact warm creators and tag every link.", "tone": "blue", "source": "TomMemory"},
+            {"channel": "Email/Klaviyo", "status": "App installed; performance pending", "blocker": "Pending Klaviyo flow and API source", "nextAction": "Create launch capture/abandon flows and connect Klaviyo metrics.", "tone": "warn", "source": "future:klaviyo"},
+        ]
+    }
+
+
+def build_unit_economics(data: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "price": "$39.99",
+        "cogs": "~$6.49",
+        "channels": [
+            {"channel": "Shopify/DTC", "net": "~$26.54", "breakEvenCac": "~$26.54", "targetCac": "≤ $13.25", "source": "known economics"},
+            {"channel": "Amazon", "net": "~$23.50", "breakEvenCac": "~$23.50", "targetCac": "≤ $11.75", "source": "known economics; sales pending future:amazon"},
+            {"channel": "TikTok Shop", "net": "~$25.50", "breakEvenCac": "~$25.50", "targetCac": "≤ $12.75", "source": "known economics; sales pending future:tiktok"},
+        ],
+        "breakEvenCac": "Use channel net as break-even CAC before overhead; live CAC pending ad/order integrations.",
+        "targetCac": "Target roughly 50% of channel net until repeat purchase data exists.",
+        "notes": [
+            "Known Maintane economics only: price $39.99, COGS ~$6.49, Shopify net ~$26.54, Amazon net ~$23.50, TikTok net ~$25.50.",
+            "No sales, conversion, CAC, or order volume is inferred without future Shopify/Amazon/TikTok sources.",
+        ],
+    }
+
+
+def _action(title: str, kpi: str, impact: str, owner: str, status: str) -> dict[str, str]:
+    return {"title": title, "kpi": kpi, "impact": impact, "owner": owner, "status": status}
+
+
+def build_action_queue(data: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "now": [
+            _action("Submit Amazon appeal with paid invoice", "Amazon channel activation", "High", "Mr. Bless", "Now"),
+            _action("Instrument CTA and checkout-start events", "Funnel attribution", "High", "Tom / Mr. Bless", "Now"),
+            _action("Add UTMs to influencer, TikTok, email, and paid links", "Attribution", "High", "Mr. Bless / Tom", "Now"),
+        ],
+        "next": [
+            _action("Build SEO briefs for high-impression septic queries", "Organic clicks", "Medium", "Tom", "Next"),
+            _action("Connect Shopify orders/revenue API", "Revenue visibility", "High", "Mr. Bless / Dev", "Next"),
+        ],
+        "waiting": [
+            _action("Pull Amazon order/ad metrics", "Marketplace profit", "High", "Future Amazon API", "Waiting"),
+            _action("Pull TikTok Shop order metrics", "Creator commerce", "Medium", "Future TikTok source", "Waiting"),
+            _action("Pull Klaviyo email revenue metrics", "Retention", "Medium", "Future Klaviyo source", "Waiting"),
+        ],
+        "done": [
+            _action("Keep website analytics and Search Console in data contract", "Visibility", "Medium", "Tom", "Done"),
+        ],
+    }
+
+
 def build_data(vault: Path, output: Path) -> dict[str, Any]:
     asset_path = vault / "Maintane" / "Maintane-brand-asset 4-19.md"
     tasks_path = vault / "Tasks.md"
@@ -371,7 +638,7 @@ def build_data(vault: Path, output: Path) -> dict[str, Any]:
         readiness += 8
     readiness = min(readiness, 95)
 
-    data = existing or {}
+    data = _ensure_base_sections(existing or {})
     data["meta"] = {
         "title": "Maintane Mission Control",
         "subtitle": "Blessopher Capital operating cockpit",
@@ -426,6 +693,12 @@ def build_data(vault: Path, output: Path) -> dict[str, Any]:
     ]
     data["tom"]["sourceNote"] = f"Dashboard content is generated from TomMemory into mission-control.json as of {now}."
     data["websiteAnalytics"] = fetch_website_analytics(existing)
+    data["commandCenter"] = build_command_center(data)
+    data["revenueFunnel"] = build_revenue_funnel(data)
+    data["seoOpportunities"] = build_seo_opportunities(data)
+    data["channelOps"] = build_channel_ops(data)
+    data["unitEconomics"] = build_unit_economics(data)
+    data["actionQueue"] = build_action_queue(data)
     return data
 
 
