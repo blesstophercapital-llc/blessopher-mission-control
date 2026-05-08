@@ -10,7 +10,7 @@ import argparse
 import json
 import os
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -149,6 +149,205 @@ def load_existing(output: Path) -> dict[str, Any]:
     return json.loads(output.read_text(encoding="utf-8")) if output.exists() else {}
 
 
+def fmt_int(value: Any) -> str:
+    try:
+        return f"{int(float(value)):,}"
+    except (TypeError, ValueError):
+        return str(value or "0")
+
+
+def fmt_pct(value: Any) -> str:
+    try:
+        return f"{float(value) * 100:.2f}%"
+    except (TypeError, ValueError):
+        return "0.00%"
+
+
+def fmt_pos(value: Any) -> str:
+    try:
+        return f"{float(value):.1f}"
+    except (TypeError, ValueError):
+        return "—"
+
+
+def _metric_value(report: dict[str, Any], index: int, default: str = "0") -> str:
+    rows = report.get("rows") or []
+    if not rows:
+        return default
+    values = rows[0].get("metricValues") or []
+    return values[index].get("value", default) if len(values) > index else default
+
+
+def _analytics_rows(report: dict[str, Any], *metric_names: str) -> list[list[str]]:
+    rows: list[list[str]] = []
+    for row in report.get("rows", []):
+        label = " / ".join(v.get("value", "") for v in row.get("dimensionValues", []))
+        metrics = [v.get("value", "0") for v in row.get("metricValues", [])]
+        rows.append([label, *metrics[: len(metric_names)]])
+    return rows
+
+
+def _gsc_rows(report: dict[str, Any]) -> list[list[str]]:
+    rows: list[list[str]] = []
+    for row in report.get("rows", []):
+        label = " / ".join(row.get("keys", []))
+        rows.append([
+            label,
+            fmt_int(row.get("clicks", 0)),
+            fmt_int(row.get("impressions", 0)),
+            fmt_pct(row.get("ctr", 0)),
+            fmt_pos(row.get("position", 0)),
+        ])
+    return rows
+
+
+def _default_website_analytics() -> dict[str, Any]:
+    return {
+        "updatedLabel": "Analytics unavailable",
+        "ga4": {"propertyId": "532192988", "propertyName": "Maintane", "period": "Last 30 days"},
+        "searchConsole": {"siteUrl": "sc-domain:getmaintane.com", "period": "Last 30 days"},
+        "scorecards": [
+            {"label": "GA4 users", "value": "—", "tone": "blue", "note": "Connect Google token to refresh."},
+            {"label": "GA4 sessions", "value": "—", "tone": "blue", "note": "Connect Google token to refresh."},
+            {"label": "Search impressions", "value": "—", "tone": "amber", "note": "Connect Search Console to refresh."},
+            {"label": "Search clicks", "value": "—", "tone": "red", "note": "Connect Search Console to refresh."},
+        ],
+        "diagnostics": [["Status", "Waiting for live analytics token", "warn"]],
+        "actions": ["Reconnect Google Analytics/Search Console and rerun npm run generate."],
+        "gaTopPages": [],
+        "gaChannels": [],
+        "gaEvents": [],
+        "gscTopQueries": [],
+        "gscTopPages": [],
+        "devices": [],
+    }
+
+
+def fetch_website_analytics(existing: dict[str, Any]) -> dict[str, Any]:
+    token_path = Path.home() / ".hermes" / "google_token.json"
+    if not token_path.exists():
+        return existing.get("websiteAnalytics") or _default_website_analytics()
+
+    try:
+        from google.oauth2.credentials import Credentials
+        from googleapiclient.discovery import build
+    except Exception:
+        return existing.get("websiteAnalytics") or _default_website_analytics()
+
+    ga_property_id = "532192988"
+    gsc_site_url = "sc-domain:getmaintane.com"
+    scopes = [
+        "https://www.googleapis.com/auth/analytics.readonly",
+        "https://www.googleapis.com/auth/webmasters.readonly",
+    ]
+    today = datetime.now().date()
+    start = today - timedelta(days=30)
+    period = f"{start.isoformat()} → {today.isoformat()}"
+
+    try:
+        creds = Credentials.from_authorized_user_file(str(token_path), scopes=scopes)
+        ga = build("analyticsdata", "v1beta", credentials=creds, cache_discovery=False)
+        gsc = build("searchconsole", "v1", credentials=creds, cache_discovery=False)
+
+        ga_summary = ga.properties().runReport(
+            property=f"properties/{ga_property_id}",
+            body={
+                "dateRanges": [{"startDate": "30daysAgo", "endDate": "today"}],
+                "metrics": [
+                    {"name": "activeUsers"},
+                    {"name": "sessions"},
+                    {"name": "screenPageViews"},
+                    {"name": "eventCount"},
+                ],
+            },
+        ).execute()
+        ga_top_pages = ga.properties().runReport(
+            property=f"properties/{ga_property_id}",
+            body={
+                "dateRanges": [{"startDate": "30daysAgo", "endDate": "today"}],
+                "dimensions": [{"name": "pagePath"}],
+                "metrics": [{"name": "screenPageViews"}, {"name": "activeUsers"}],
+                "orderBys": [{"metric": {"metricName": "screenPageViews"}, "desc": True}],
+                "limit": 8,
+            },
+        ).execute()
+        ga_channels = ga.properties().runReport(
+            property=f"properties/{ga_property_id}",
+            body={
+                "dateRanges": [{"startDate": "30daysAgo", "endDate": "today"}],
+                "dimensions": [{"name": "sessionDefaultChannelGroup"}],
+                "metrics": [{"name": "sessions"}, {"name": "activeUsers"}],
+                "orderBys": [{"metric": {"metricName": "sessions"}, "desc": True}],
+                "limit": 8,
+            },
+        ).execute()
+        ga_events = ga.properties().runReport(
+            property=f"properties/{ga_property_id}",
+            body={
+                "dateRanges": [{"startDate": "30daysAgo", "endDate": "today"}],
+                "dimensions": [{"name": "eventName"}],
+                "metrics": [{"name": "eventCount"}],
+                "orderBys": [{"metric": {"metricName": "eventCount"}, "desc": True}],
+                "limit": 8,
+            },
+        ).execute()
+
+        gsc_base = {"startDate": start.isoformat(), "endDate": today.isoformat()}
+        gsc_summary = gsc.searchanalytics().query(siteUrl=gsc_site_url, body={**gsc_base, "dimensions": [], "rowLimit": 1}).execute()
+        gsc_queries = gsc.searchanalytics().query(siteUrl=gsc_site_url, body={**gsc_base, "dimensions": ["query"], "rowLimit": 12}).execute()
+        gsc_pages = gsc.searchanalytics().query(siteUrl=gsc_site_url, body={**gsc_base, "dimensions": ["page"], "rowLimit": 10}).execute()
+        gsc_devices = gsc.searchanalytics().query(siteUrl=gsc_site_url, body={**gsc_base, "dimensions": ["device"], "rowLimit": 5}).execute()
+
+        users = _metric_value(ga_summary, 0)
+        sessions = _metric_value(ga_summary, 1)
+        pageviews = _metric_value(ga_summary, 2)
+        events = _metric_value(ga_summary, 3)
+        gsc_row = (gsc_summary.get("rows") or [{}])[0]
+        impressions = gsc_row.get("impressions", 0)
+        clicks = gsc_row.get("clicks", 0)
+        ctr = gsc_row.get("ctr", 0)
+        position = gsc_row.get("position", 0)
+
+        nonbrand_rows = [r for r in gsc_queries.get("rows", []) if "maintane" not in (r.get("keys") or [""])[0].lower()]
+        best_nonbrand = nonbrand_rows[0] if nonbrand_rows else None
+        best_nonbrand_label = (best_nonbrand.get("keys") or ["None yet"])[0] if best_nonbrand else "None yet"
+        best_nonbrand_impressions = best_nonbrand.get("impressions", 0) if best_nonbrand else 0
+
+        actions = [
+            "Treat the homepage as the conversion hub: it has the only search click and the strongest branded rank.",
+            "Refresh title/meta and add stronger internal links for septic tank cleaning cost, bacteria, and how-often treatment pages — they have impressions but weak rank.",
+            "Turn high-impression/low-rank queries into content briefs: septic cleaning cost, septic bacteria, old-home treatment, and Rid-X alternative/comparison.",
+            "Fix analytics hygiene: reduce Unassigned traffic by tagging influencer, TikTok, paid social, and email links with UTMs.",
+        ]
+
+        return {
+            "updatedLabel": f"Pulled {datetime.now().astimezone().strftime('%a %b %-d · %-I:%M %p %Z')}",
+            "ga4": {"propertyId": ga_property_id, "propertyName": "Maintane", "period": "Last 30 days"},
+            "searchConsole": {"siteUrl": gsc_site_url, "period": period},
+            "scorecards": [
+                {"label": "GA4 active users", "value": fmt_int(users), "tone": "blue", "note": f"{fmt_int(sessions)} sessions · {fmt_int(pageviews)} page views"},
+                {"label": "GA4 events", "value": fmt_int(events), "tone": "green", "note": "Includes CTA impressions, nav clicks, scrolls, engagement."},
+                {"label": "Search impressions", "value": fmt_int(impressions), "tone": "amber", "note": f"Avg position {fmt_pos(position)} · CTR {fmt_pct(ctr)}"},
+                {"label": "Search clicks", "value": fmt_int(clicks), "tone": "red", "note": "SEO is indexed but not converting clicks yet."},
+            ],
+            "diagnostics": [
+                ["GA4 property", "Maintane · 532192988", "ok"],
+                ["Search property", gsc_site_url, "ok"],
+                ["SEO readout", f"{fmt_int(impressions)} impressions / {fmt_int(clicks)} clicks / rank {fmt_pos(position)}", "warn"],
+                ["Best non-brand query", f"{best_nonbrand_label} · {fmt_int(best_nonbrand_impressions)} impressions", "info"],
+            ],
+            "actions": actions,
+            "gaTopPages": _analytics_rows(ga_top_pages, "Views", "Users"),
+            "gaChannels": _analytics_rows(ga_channels, "Sessions", "Users"),
+            "gaEvents": _analytics_rows(ga_events, "Events"),
+            "gscTopQueries": _gsc_rows(gsc_queries),
+            "gscTopPages": _gsc_rows(gsc_pages),
+            "devices": _gsc_rows(gsc_devices),
+        }
+    except Exception:
+        return existing.get("websiteAnalytics") or _default_website_analytics()
+
+
 def build_data(vault: Path, output: Path) -> dict[str, Any]:
     asset_path = vault / "Maintane" / "Maintane-brand-asset 4-19.md"
     tasks_path = vault / "Tasks.md"
@@ -226,6 +425,7 @@ def build_data(vault: Path, output: Path) -> dict[str, Any]:
         {"label": "TikTok net", "value": "~$25.50", "tone": "green", "note": "After commission + shipping"},
     ]
     data["tom"]["sourceNote"] = f"Dashboard content is generated from TomMemory into mission-control.json as of {now}."
+    data["websiteAnalytics"] = fetch_website_analytics(existing)
     return data
 
 

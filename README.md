@@ -6,11 +6,13 @@ Static Cloudflare Pages dashboard for Blessopher Capital / Maintane.
 
 `index.html` renders from `mission-control.json`.
 
-`mission-control.json` is generated from TomMemory:
+`mission-control.json` is generated from TomMemory plus live Google metrics when `~/.hermes/google_token.json` is authorized:
 
 - `/Users/christopherbless/TomMemory/Maintane/Maintane-brand-asset 4-19.md`
 - `/Users/christopherbless/TomMemory/Tasks.md`
 - `/Users/christopherbless/TomMemory/Content-Strategy/Maintane-Content-Strategy.md`
+- GA4 property `532192988` / Maintane
+- Search Console property `sc-domain:getmaintane.com`
 
 ## Update dashboard data
 

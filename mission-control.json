@@ -2,7 +2,7 @@
   "meta": {
     "title": "Maintane Mission Control",
     "subtitle": "Blessopher Capital operating cockpit",
-    "updatedLabel": "Updated Thu May 7 · 10:21 PM EDT",
+    "updatedLabel": "Updated Thu May 7 · 10:50 PM EDT",
     "source": "~/TomMemory",
     "siteUrl": "https://getmaintane.com",
     "cloudflareNote": "Cloudflare Pages deploys from GitHub main when connected."
@@ -447,6 +447,366 @@
         "Maintane-Content-Strategy.md"
       ]
     ],
-    "sourceNote": "Dashboard content is generated from TomMemory into mission-control.json as of Thu May 7 · 10:21 PM EDT."
+    "sourceNote": "Dashboard content is generated from TomMemory into mission-control.json as of Thu May 7 · 10:50 PM EDT."
+  },
+  "websiteAnalytics": {
+    "updatedLabel": "Pulled Thu May 7 · 10:50 PM EDT",
+    "ga4": {
+      "propertyId": "532192988",
+      "propertyName": "Maintane",
+      "period": "Last 30 days"
+    },
+    "searchConsole": {
+      "siteUrl": "sc-domain:getmaintane.com",
+      "period": "2026-04-07 → 2026-05-07"
+    },
+    "scorecards": [
+      {
+        "label": "GA4 active users",
+        "value": "271",
+        "tone": "blue",
+        "note": "383 sessions · 1,930 page views"
+      },
+      {
+        "label": "GA4 events",
+        "value": "6,702",
+        "tone": "green",
+        "note": "Includes CTA impressions, nav clicks, scrolls, engagement."
+      },
+      {
+        "label": "Search impressions",
+        "value": "1,495",
+        "tone": "amber",
+        "note": "Avg position 35.6 · CTR 0.07%"
+      },
+      {
+        "label": "Search clicks",
+        "value": "1",
+        "tone": "red",
+        "note": "SEO is indexed but not converting clicks yet."
+      }
+    ],
+    "diagnostics": [
+      [
+        "GA4 property",
+        "Maintane · 532192988",
+        "ok"
+      ],
+      [
+        "Search property",
+        "sc-domain:getmaintane.com",
+        "ok"
+      ],
+      [
+        "SEO readout",
+        "1,495 impressions / 1 clicks / rank 35.6",
+        "warn"
+      ],
+      [
+        "Best non-brand query",
+        "a bacteria living in an underground septic tank · 3 impressions",
+        "info"
+      ]
+    ],
+    "actions": [
+      "Treat the homepage as the conversion hub: it has the only search click and the strongest branded rank.",
+      "Refresh title/meta and add stronger internal links for septic tank cleaning cost, bacteria, and how-often treatment pages — they have impressions but weak rank.",
+      "Turn high-impression/low-rank queries into content briefs: septic cleaning cost, septic bacteria, old-home treatment, and Rid-X alternative/comparison.",
+      "Fix analytics hygiene: reduce Unassigned traffic by tagging influencer, TikTok, paid social, and email links with UTMs."
+    ],
+    "gaTopPages": [
+      [
+        "/",
+        "952",
+        "228"
+      ],
+      [
+        "/blog/",
+        "233",
+        "14"
+      ],
+      [
+        "/how-it-works.html",
+        "120",
+        "2"
+      ],
+      [
+        "/dosing-guide.html",
+        "97",
+        "5"
+      ],
+      [
+        "/blog/dosing-guide.html",
+        "89",
+        "14"
+      ],
+      [
+        "/waitlist/",
+        "41",
+        "35"
+      ],
+      [
+        "/products.html",
+        "40",
+        "3"
+      ],
+      [
+        "/blog/what-kills-septic-tank-bacteria.html",
+        "32",
+        "6"
+      ]
+    ],
+    "gaChannels": [
+      [
+        "Direct",
+        "206",
+        "151"
+      ],
+      [
+        "Organic Social",
+        "70",
+        "69"
+      ],
+      [
+        "Paid Social",
+        "50",
+        "47"
+      ],
+      [
+        "Unassigned",
+        "48",
+        "1"
+      ],
+      [
+        "Organic Search",
+        "9",
+        "4"
+      ],
+      [
+        "Paid Search",
+        "2",
+        "2"
+      ],
+      [
+        "Referral",
+        "1",
+        "1"
+      ]
+    ],
+    "gaEvents": [
+      [
+        "page_view",
+        "1930"
+      ],
+      [
+        "checkout_cta_impression",
+        "1493"
+      ],
+      [
+        "user_engagement",
+        "1198"
+      ],
+      [
+        "scroll",
+        "554"
+      ],
+      [
+        "session_start",
+        "384"
+      ],
+      [
+        "first_visit",
+        "271"
+      ],
+      [
+        "nav_click",
+        "259"
+      ],
+      [
+        "popup_shown",
+        "135"
+      ]
+    ],
+    "gscTopQueries": [
+      [
+        "maintane",
+        "1",
+        "510",
+        "0.20%",
+        "4.7"
+      ],
+      [
+        "a bacteria living in an underground septic tank",
+        "0",
+        "3",
+        "0.00%",
+        "69.7"
+      ],
+      [
+        "average cost for septic tank cleaning",
+        "0",
+        "1",
+        "0.00%",
+        "62.0"
+      ],
+      [
+        "average cost to clean septic tank",
+        "0",
+        "1",
+        "0.00%",
+        "51.0"
+      ],
+      [
+        "average septic tank cleaning cost",
+        "0",
+        "1",
+        "0.00%",
+        "82.0"
+      ],
+      [
+        "bacteria for septic tank",
+        "0",
+        "1",
+        "0.00%",
+        "87.0"
+      ],
+      [
+        "bacteria for septic tank treatment",
+        "0",
+        "1",
+        "0.00%",
+        "94.0"
+      ],
+      [
+        "bacteria for septic tanks",
+        "0",
+        "1",
+        "0.00%",
+        "89.0"
+      ],
+      [
+        "bacteria in septic tank",
+        "0",
+        "14",
+        "0.00%",
+        "60.5"
+      ],
+      [
+        "bacteria in septic tanks",
+        "0",
+        "33",
+        "0.00%",
+        "62.9"
+      ],
+      [
+        "bacteria septic",
+        "0",
+        "1",
+        "0.00%",
+        "67.0"
+      ],
+      [
+        "bacteria septic tank",
+        "0",
+        "1",
+        "0.00%",
+        "70.0"
+      ]
+    ],
+    "gscTopPages": [
+      [
+        "https://getmaintane.com/",
+        "1",
+        "535",
+        "0.19%",
+        "4.3"
+      ],
+      [
+        "http://getmaintane.com/",
+        "0",
+        "54",
+        "0.00%",
+        "7.3"
+      ],
+      [
+        "https://getmaintane.com/blog/",
+        "0",
+        "10",
+        "0.00%",
+        "4.3"
+      ],
+      [
+        "https://getmaintane.com/blog/best-laundry-detergent-for-septic-systems.html",
+        "0",
+        "10",
+        "0.00%",
+        "36.0"
+      ],
+      [
+        "https://getmaintane.com/blog/best-septic-tank-treatment-for-older-homes.html",
+        "0",
+        "4",
+        "0.00%",
+        "5.8"
+      ],
+      [
+        "https://getmaintane.com/blog/best-septic-treatment-for-monthly-maintenance.html",
+        "0",
+        "7",
+        "0.00%",
+        "21.6"
+      ],
+      [
+        "https://getmaintane.com/blog/dosing-guide.html",
+        "0",
+        "7",
+        "0.00%",
+        "6.3"
+      ],
+      [
+        "https://getmaintane.com/blog/how-bacteria-keep-septic-healthy.html",
+        "0",
+        "135",
+        "0.00%",
+        "56.6"
+      ],
+      [
+        "https://getmaintane.com/blog/how-often-septic-treatment.html",
+        "0",
+        "75",
+        "0.00%",
+        "32.9"
+      ],
+      [
+        "https://getmaintane.com/blog/how-to-maintain-septic-tank.html",
+        "0",
+        "118",
+        "0.00%",
+        "75.3"
+      ]
+    ],
+    "devices": [
+      [
+        "MOBILE",
+        "1",
+        "467",
+        "0.21%",
+        "26.8"
+      ],
+      [
+        "DESKTOP",
+        "0",
+        "1,025",
+        "0.00%",
+        "39.7"
+      ],
+      [
+        "TABLET",
+        "0",
+        "3",
+        "0.00%",
+        "8.3"
+      ]
+    ]
   }
 }
