@@ -29,15 +29,15 @@
   </main>
   <aside class="right glass" id="rightRail">
     <span class="chip">Tom command surface</span>
-    <h2>Tom Operator Console</h2>
+    <h2>Operator recommendations</h2>
+    <div class="tomBox"><b class="cyan">My read:</b><p class="muted" id="tomRead">Loading recommendations...</p></div>
+    <div class="prompt" id="tomPrompts"></div>
+    <h2 style="margin-top:22px">Tom Operator Console</h2>
     <div class="chat-status" id="tomStatus">Hermes operator bridge is live. No browser access key required. API keys stay server-side.</div>
     <div class="chat-log" id="tomChatLog"><div class="chat-msg system">Tom is ready. Ask about the dashboard or request an operator action. Sensitive actions still require explicit confirmation.</div></div>
     <textarea class="chat-input" id="tomPrompt" placeholder="Ask Tom what needs attention, draft a task plan, or route an operator action..."></textarea>
     <div class="chat-actions"><button class="btn primary" onclick="sendTom()">Send to Hermes</button><button class="btn" onclick="document.getElementById('tomPrompt').value=''">Clear</button><button class="btn" onclick="clearTomChat()">Clear chat</button></div>
     <div class="source">Backend: /api/tom-chat → Hermes API Server. API keys stay server-side.</div>
-    <h2 style="margin-top:22px">Operator recommendations</h2>
-    <div class="tomBox"><b class="cyan">My read:</b><p class="muted" id="tomRead">Loading recommendations...</p></div>
-    <div class="prompt" id="tomPrompts"></div>
     <h2 style="margin-top:22px">Live activity</h2>
     <div class="feed" id="liveFeed"></div>
   </aside>

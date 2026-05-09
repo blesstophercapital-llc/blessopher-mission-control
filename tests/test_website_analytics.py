@@ -148,6 +148,8 @@ class WebsiteAnalyticsTests(unittest.TestCase):
         worker = function_path.read_text()
 
         self.assertIn("Tom Operator Console", html)
+        self.assertIn("Operator recommendations", html)
+        self.assertLess(html.index("Operator recommendations"), html.index("Tom Operator Console"))
         self.assertIn("/api/tom-chat", html)
         self.assertIn("No browser access key required", html)
         self.assertNotIn("X-Mission-Control-Key", html)
