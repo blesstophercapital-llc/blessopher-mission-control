@@ -142,6 +142,22 @@ class WebsiteAnalyticsTests(unittest.TestCase):
         self.assertIn("No Launch page", html)
         self.assertIn("data.websiteAnalytics", html)
 
+    def test_index_has_hermes_operator_chat_bridge(self):
+        html = (ROOT / "index.html").read_text()
+        function_path = ROOT / "functions" / "api" / "tom-chat.js"
+        worker = function_path.read_text()
+
+        self.assertIn("Tom Operator Console", html)
+        self.assertIn("/api/tom-chat", html)
+        self.assertIn("X-Mission-Control-Key", html)
+        self.assertIn("sessionStorage.getItem('missionControlTomKey')", html)
+        self.assertIn("HERMES_API_BASE", worker)
+        self.assertIn("HERMES_API_KEY", worker)
+        self.assertIn("MISSION_CONTROL_TOM_KEY", worker)
+        self.assertIn("/v1/chat/completions", worker)
+        self.assertIn("X-Hermes-Session-Key", worker)
+        self.assertIn("do not send emails", worker)
+
     def test_index_uses_mobile_hamburger_off_canvas_navigation(self):
         html = (ROOT / "index.html").read_text()
         self.assertIn("@media(max-width:860px)", html)
