@@ -19,6 +19,8 @@ function defaultZohoInventory(status = 'missing_credentials', message = 'Set Zoh
       { label: 'Zoho sales orders', value: '—', tone: 'amber', note: 'Requires Zoho Inventory API.', source: 'future:zoho' },
       { label: 'Zoho invoices', value: '—', tone: 'amber', note: 'Requires Zoho Inventory API.', source: 'future:zoho' },
     ],
+    inventoryItems: [],
+    inventoryTypeSummary: [],
     lowStockItems: [],
     recentSalesOrders: [],
     recentInvoices: [],
@@ -42,6 +44,14 @@ function qty(item) {
 function reorderLevel(item) {
   const n = Number(item.reorder_level || 0);
   return Number.isFinite(n) ? n : 0;
+}
+
+function itemType(item) {
+  return String(item.category_name || item.product_type || item.item_type || item.type || 'Uncategorized').trim() || 'Uncategorized';
+}
+
+function itemStatus(item) {
+  return String(item.status || item.item_status || '').trim();
 }
 
 async function readJson(response) {
@@ -104,6 +114,29 @@ async function fetchZohoInventory(env) {
   const salesOrders = Array.isArray(ordersPayload.salesorders) ? ordersPayload.salesorders : [];
   const invoices = Array.isArray(invoicesPayload.invoices) ? invoicesPayload.invoices : [];
   const lowStock = items.filter((item) => reorderLevel(item) && qty(item) <= reorderLevel(item));
+  const inventoryItems = items
+    .map((item) => ({
+      name: item.name || 'Unnamed item',
+      sku: item.sku || '',
+      type: itemType(item),
+      status: itemStatus(item),
+      stock: fmtInt(qty(item)),
+      stockRaw: qty(item),
+      reorderLevel: fmtInt(reorderLevel(item)),
+      unit: item.unit || item.unit_name || 'units',
+      rate: item.rate ? `$${Number(item.rate || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : '',
+    }))
+    .sort((a, b) => b.stockRaw - a.stockRaw || a.name.localeCompare(b.name));
+  const inventoryTypeMap = new Map();
+  for (const item of inventoryItems) {
+    const current = inventoryTypeMap.get(item.type) || { type: item.type, units: 0, items: 0 };
+    current.units += item.stockRaw;
+    current.items += 1;
+    inventoryTypeMap.set(item.type, current);
+  }
+  const inventoryTypeSummary = Array.from(inventoryTypeMap.values())
+    .sort((a, b) => b.units - a.units || a.type.localeCompare(b.type))
+    .map((entry) => ({ type: entry.type, units: fmtInt(entry.units), items: fmtInt(entry.items) }));
   const openOrders = salesOrders.filter((order) => !['closed', 'void', 'cancelled'].includes(String(order.status || '').toLowerCase()));
   const unpaidInvoices = invoices.filter((invoice) => !['paid', 'void', 'cancelled'].includes(String(invoice.status || '').toLowerCase()));
   const paidTotal = invoices
@@ -119,9 +152,21 @@ async function fetchZohoInventory(env) {
       { label: 'Zoho sales orders', value: fmtInt(salesOrders.length), tone: 'blue', note: `${openOrders.length} open in recent pull.`, source: 'zoho_inventory' },
       { label: 'Zoho invoices', value: fmtInt(invoices.length), tone: 'blue', note: `${unpaidInvoices.length} unpaid in recent pull; paid total $${paidTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}.`, source: 'zoho_inventory' },
     ],
+    inventoryItems: inventoryItems.map((item) => ({
+      name: item.name,
+      sku: item.sku,
+      type: item.type,
+      status: item.status,
+      stock: item.stock,
+      reorderLevel: item.reorderLevel,
+      unit: item.unit,
+      rate: item.rate,
+    })),
+    inventoryTypeSummary,
     lowStockItems: lowStock.slice(0, 10).map((item) => ({
       name: item.name || 'Unnamed item',
       sku: item.sku || '',
+      type: itemType(item),
       stock: fmtInt(qty(item)),
       reorderLevel: fmtInt(reorderLevel(item)),
     })),

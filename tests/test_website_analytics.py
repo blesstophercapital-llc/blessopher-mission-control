@@ -171,6 +171,8 @@ class WebsiteAnalyticsTests(unittest.TestCase):
 
         self.assertIn("/api/zoho-inventory", html)
         self.assertIn("applyLiveZoho", html)
+        self.assertIn("inventoryItems", html)
+        self.assertIn("Itemized live inventory", html)
         self.assertIn("ZOHO_CLIENT_ID", worker)
         self.assertIn("ZOHO_CLIENT_SECRET", worker)
         self.assertIn("ZOHO_REFRESH_TOKEN", worker)

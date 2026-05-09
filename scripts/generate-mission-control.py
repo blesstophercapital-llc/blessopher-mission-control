@@ -190,6 +190,8 @@ def _default_zoho_inventory(status: str = "missing_credentials", message: str = 
             {"label": "Zoho sales orders", "value": "—", "tone": "amber", "note": "Requires Zoho Inventory API.", "source": "future:zoho"},
             {"label": "Zoho invoices", "value": "—", "tone": "amber", "note": "Requires Zoho Inventory API.", "source": "future:zoho"},
         ],
+        "inventoryItems": [],
+        "inventoryTypeSummary": [],
         "lowStockItems": [],
         "recentSalesOrders": [],
         "recentInvoices": [],
@@ -243,7 +245,33 @@ def fetch_zoho_inventory(existing: dict[str, Any]) -> dict[str, Any]:
         except (TypeError, ValueError):
             return 0.0
 
+    def item_type(item: dict[str, Any]) -> str:
+        return str(item.get("category_name") or item.get("product_type") or item.get("item_type") or item.get("type") or "Uncategorized").strip() or "Uncategorized"
+
     total_stock = sum(qty(item) for item in items)
+    inventory_items = sorted([
+        {
+            "name": item.get("name", "Unnamed item"),
+            "sku": item.get("sku", ""),
+            "type": item_type(item),
+            "status": str(item.get("status") or item.get("item_status") or ""),
+            "stock": fmt_int(qty(item)),
+            "stockRaw": qty(item),
+            "reorderLevel": fmt_int(reorder_level(item)),
+            "unit": item.get("unit") or item.get("unit_name") or "units",
+            "rate": f"${float(item.get('rate') or 0):,.2f}" if item.get("rate") else "",
+        }
+        for item in items
+    ], key=lambda item: (-item["stockRaw"], item["name"]))
+    inventory_summary_map: dict[str, dict[str, Any]] = {}
+    for item in inventory_items:
+        summary = inventory_summary_map.setdefault(item["type"], {"type": item["type"], "units": 0.0, "items": 0})
+        summary["units"] += float(item["stockRaw"] or 0)
+        summary["items"] += 1
+    inventory_type_summary = [
+        {"type": row["type"], "units": fmt_int(row["units"]), "items": fmt_int(row["items"])}
+        for row in sorted(inventory_summary_map.values(), key=lambda row: (-row["units"], row["type"]))
+    ]
     low_stock = [item for item in items if reorder_level(item) and qty(item) <= reorder_level(item)]
     open_orders = [order for order in sales_orders if str(order.get("status", "")).lower() not in {"closed", "void", "cancelled"}]
     unpaid_invoices = [invoice for invoice in invoices if str(invoice.get("status", "")).lower() not in {"paid", "void", "cancelled"}]
@@ -259,8 +287,13 @@ def fetch_zoho_inventory(existing: dict[str, Any]) -> dict[str, Any]:
             {"label": "Zoho sales orders", "value": fmt_int(len(sales_orders)), "tone": "blue", "note": f"{len(open_orders)} open in recent pull.", "source": "zoho_inventory"},
             {"label": "Zoho invoices", "value": fmt_int(len(invoices)), "tone": "blue", "note": f"{len(unpaid_invoices)} unpaid in recent pull; paid total ${paid_total:,.2f}.", "source": "zoho_inventory"},
         ],
+        "inventoryItems": [
+            {key: value for key, value in item.items() if key != "stockRaw"}
+            for item in inventory_items
+        ],
+        "inventoryTypeSummary": inventory_type_summary,
         "lowStockItems": [
-            {"name": item.get("name", "Unnamed item"), "sku": item.get("sku", ""), "stock": fmt_int(qty(item)), "reorderLevel": fmt_int(reorder_level(item))}
+            {"name": item.get("name", "Unnamed item"), "sku": item.get("sku", ""), "type": item_type(item), "stock": fmt_int(qty(item)), "reorderLevel": fmt_int(reorder_level(item))}
             for item in low_stock[:10]
         ],
         "recentSalesOrders": [

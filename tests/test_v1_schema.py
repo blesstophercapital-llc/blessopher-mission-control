@@ -72,7 +72,7 @@ class V1SchemaTests(unittest.TestCase):
 
     def test_zoho_inventory_schema(self):
         section = self.data["zohoInventory"]
-        for key in ["updatedLabel", "status", "message", "scorecards", "lowStockItems", "recentSalesOrders", "recentInvoices"]:
+        for key in ["updatedLabel", "status", "message", "scorecards", "inventoryItems", "inventoryTypeSummary", "lowStockItems", "recentSalesOrders", "recentInvoices"]:
             self.assertIn(key, section)
         labels = {card["label"] for card in section["scorecards"]}
         self.assertIn("Zoho stock on hand", labels)
