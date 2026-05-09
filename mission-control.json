@@ -2,7 +2,7 @@
   "meta": {
     "title": "Maintane Mission Control",
     "subtitle": "Blessopher Capital operating cockpit",
-    "updatedLabel": "Updated Fri May 8 · 10:08 PM EDT",
+    "updatedLabel": "Updated Fri May 8 · 11:29 PM EDT",
     "source": "~/TomMemory",
     "siteUrl": "https://getmaintane.com",
     "cloudflareNote": "Cloudflare Pages deploys from GitHub main when connected."
@@ -125,9 +125,9 @@
       },
       {
         "label": "Inventory",
-        "value": "250",
-        "tone": "blue",
-        "note": "On hand / production per TomMemory"
+        "value": "—",
+        "tone": "amber",
+        "note": "Missing Zoho env vars: client_id, client_secret, refresh_token, organization_id."
       }
     ],
     "columns": [
@@ -447,7 +447,7 @@
         "Maintane-Content-Strategy.md"
       ]
     ],
-    "sourceNote": "Dashboard content is generated from TomMemory into mission-control.json as of Fri May 8 · 10:08 PM EDT."
+    "sourceNote": "Dashboard content is generated from TomMemory into mission-control.json as of Fri May 8 · 11:29 PM EDT."
   },
   "websiteAnalytics": {
     "updatedLabel": "Pulled Fri May 8 · 2:38 PM EDT",
@@ -820,16 +820,16 @@
       {
         "label": "Revenue",
         "value": "Pending Shopify API",
-        "note": "Future source required; no fake sales metrics.",
+        "note": "Future source required for DTC revenue; Zoho invoices are tracked separately.",
         "tone": "warn",
         "source": "future:shopify"
       },
       {
         "label": "Orders",
-        "value": "Pending Shopify API",
-        "note": "Requires Shopify order integration.",
+        "value": "Pending Zoho/Shopify API",
+        "note": "Requires Zoho Inventory or Shopify order integration.",
         "tone": "warn",
-        "source": "future:shopify"
+        "source": "future:zoho"
       },
       {
         "label": "Sessions",
@@ -846,18 +846,18 @@
         "source": "search_console"
       },
       {
-        "label": "Contribution Profit",
-        "value": "Pending Shopify API",
-        "note": "Calculated after order and channel costs are integrated.",
+        "label": "Inventory",
+        "value": "Pending Zoho API",
+        "note": "Live stock requires Zoho Inventory API.",
         "tone": "warn",
-        "source": "future:shopify"
+        "source": "future:zoho"
       },
       {
         "label": "Channel Status",
         "value": "DTC live; Amazon/TikTok pending",
-        "note": "Based on Maintane brand asset, not sales data.",
+        "note": "Based on Maintane brand asset plus live integrations when available.",
         "tone": "amber",
-        "source": "TomMemory"
+        "source": "TomMemory/Zoho"
       }
     ],
     "primaryBottleneck": {
@@ -907,9 +907,9 @@
       },
       {
         "label": "Orders",
-        "value": "Pending Shopify API",
+        "value": "Pending Zoho/Shopify API",
         "status": "pending",
-        "source": "future:shopify",
+        "source": "future:zoho",
         "tone": "warn"
       },
       {
@@ -1276,5 +1276,36 @@
         "status": "Done"
       }
     ]
+  },
+  "zohoInventory": {
+    "updatedLabel": "Zoho unavailable",
+    "status": "missing_credentials",
+    "message": "Missing Zoho env vars: client_id, client_secret, refresh_token, organization_id.",
+    "scorecards": [
+      {
+        "label": "Zoho stock on hand",
+        "value": "—",
+        "tone": "amber",
+        "note": "Missing Zoho env vars: client_id, client_secret, refresh_token, organization_id.",
+        "source": "future:zoho"
+      },
+      {
+        "label": "Zoho sales orders",
+        "value": "—",
+        "tone": "amber",
+        "note": "Requires Zoho Inventory API.",
+        "source": "future:zoho"
+      },
+      {
+        "label": "Zoho invoices",
+        "value": "—",
+        "tone": "amber",
+        "note": "Requires Zoho Inventory API.",
+        "source": "future:zoho"
+      }
+    ],
+    "lowStockItems": [],
+    "recentSalesOrders": [],
+    "recentInvoices": []
   }
 }

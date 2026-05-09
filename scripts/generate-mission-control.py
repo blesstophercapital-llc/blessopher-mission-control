@@ -10,6 +10,9 @@ import argparse
 import json
 import os
 import re
+import urllib.error
+import urllib.parse
+import urllib.request
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
@@ -147,6 +150,128 @@ def parse_brand_asset(asset_md: str) -> dict[str, Any]:
 
 def load_existing(output: Path) -> dict[str, Any]:
     return json.loads(output.read_text(encoding="utf-8")) if output.exists() else {}
+
+
+def _first_env(*names: str) -> str:
+    for name in names:
+        value = os.environ.get(name, "").strip()
+        if value:
+            return value
+    return ""
+
+
+def _zoho_credentials() -> dict[str, str]:
+    return {
+        "client_id": _first_env("ZOHO_CLIENT_ID", "ZOHO_INVENTORY_CLIENT_ID"),
+        "client_secret": _first_env("ZOHO_CLIENT_SECRET", "ZOHO_INVENTORY_CLIENT_SECRET"),
+        "refresh_token": _first_env("ZOHO_REFRESH_TOKEN", "ZOHO_INVENTORY_REFRESH_TOKEN"),
+        "organization_id": _first_env("ZOHO_ORGANIZATION_ID", "ZOHO_INVENTORY_ORGANIZATION_ID", "ZOHO_ORG_ID"),
+        "accounts_base": _first_env("ZOHO_ACCOUNTS_BASE", "ZOHO_ACCOUNTS_URL") or "https://accounts.zoho.com",
+        "api_base": _first_env("ZOHO_INVENTORY_API_BASE", "ZOHO_API_BASE") or "https://www.zohoapis.com/inventory/v1",
+    }
+
+
+def _json_request(url: str, *, method: str = "GET", headers: dict[str, str] | None = None, data: dict[str, str] | None = None, timeout: int = 20) -> dict[str, Any]:
+    encoded = urllib.parse.urlencode(data).encode("utf-8") if data is not None else None
+    request = urllib.request.Request(url, data=encoded, method=method, headers=headers or {})
+    if data is not None:
+        request.add_header("Content-Type", "application/x-www-form-urlencoded")
+    with urllib.request.urlopen(request, timeout=timeout) as response:
+        return json.loads(response.read().decode("utf-8"))
+
+
+def _default_zoho_inventory(status: str = "missing_credentials", message: str = "Set Zoho OAuth env vars to enable live inventory data.") -> dict[str, Any]:
+    return {
+        "updatedLabel": "Zoho unavailable",
+        "status": status,
+        "message": message,
+        "scorecards": [
+            {"label": "Zoho stock on hand", "value": "—", "tone": "amber", "note": message, "source": "future:zoho"},
+            {"label": "Zoho sales orders", "value": "—", "tone": "amber", "note": "Requires Zoho Inventory API.", "source": "future:zoho"},
+            {"label": "Zoho invoices", "value": "—", "tone": "amber", "note": "Requires Zoho Inventory API.", "source": "future:zoho"},
+        ],
+        "lowStockItems": [],
+        "recentSalesOrders": [],
+        "recentInvoices": [],
+    }
+
+
+def fetch_zoho_inventory(existing: dict[str, Any]) -> dict[str, Any]:
+    creds = _zoho_credentials()
+    required = ["client_id", "client_secret", "refresh_token", "organization_id"]
+    missing = [name for name in required if not creds.get(name)]
+    if missing:
+        fallback = existing.get("zohoInventory")
+        if fallback and fallback.get("status") == "ok":
+            return fallback
+        return _default_zoho_inventory(message=f"Missing Zoho env vars: {', '.join(missing)}.")
+
+    token_url = f"{creds['accounts_base'].rstrip('/')}/oauth/v2/token"
+    try:
+        token_response = _json_request(token_url, method="POST", data={
+            "refresh_token": creds["refresh_token"],
+            "client_id": creds["client_id"],
+            "client_secret": creds["client_secret"],
+            "grant_type": "refresh_token",
+        })
+        access_token = token_response["access_token"]
+        headers = {"Authorization": f"Zoho-oauthtoken {access_token}"}
+        api_base = creds["api_base"].rstrip("/")
+        org_qs = urllib.parse.urlencode({"organization_id": creds["organization_id"]})
+
+        items = _json_request(f"{api_base}/items?{org_qs}&per_page=200", headers=headers).get("items", [])
+        sales_orders = _json_request(f"{api_base}/salesorders?{org_qs}&per_page=20&sort_column=created_time&sort_order=D", headers=headers).get("salesorders", [])
+        invoices = _json_request(f"{api_base}/invoices?{org_qs}&per_page=20&sort_column=created_time&sort_order=D", headers=headers).get("invoices", [])
+    except (KeyError, urllib.error.URLError, urllib.error.HTTPError, TimeoutError, json.JSONDecodeError) as exc:
+        fallback = existing.get("zohoInventory")
+        if fallback and fallback.get("status") == "ok":
+            fallback["message"] = f"Zoho refresh failed; showing last successful pull. Error: {exc}"
+            return fallback
+        return _default_zoho_inventory(status="error", message=f"Zoho refresh failed: {exc}")
+
+    def qty(item: dict[str, Any]) -> float:
+        for key in ["available_stock", "actual_available_stock", "stock_on_hand", "quantity_available"]:
+            try:
+                return float(item.get(key) or 0)
+            except (TypeError, ValueError):
+                continue
+        return 0.0
+
+    def reorder_level(item: dict[str, Any]) -> float:
+        try:
+            return float(item.get("reorder_level") or 0)
+        except (TypeError, ValueError):
+            return 0.0
+
+    total_stock = sum(qty(item) for item in items)
+    low_stock = [item for item in items if reorder_level(item) and qty(item) <= reorder_level(item)]
+    open_orders = [order for order in sales_orders if str(order.get("status", "")).lower() not in {"closed", "void", "cancelled"}]
+    unpaid_invoices = [invoice for invoice in invoices if str(invoice.get("status", "")).lower() not in {"paid", "void", "cancelled"}]
+    paid_total = sum(float(invoice.get("total") or 0) for invoice in invoices if str(invoice.get("status", "")).lower() == "paid")
+
+    now = datetime.now().astimezone().strftime("%a %b %-d · %-I:%M %p %Z")
+    return {
+        "updatedLabel": f"Zoho synced {now}",
+        "status": "ok",
+        "message": "Live read-only Zoho Inventory API pull.",
+        "scorecards": [
+            {"label": "Zoho stock on hand", "value": fmt_int(total_stock), "tone": "green", "note": f"Across {len(items)} item(s).", "source": "zoho_inventory"},
+            {"label": "Zoho sales orders", "value": fmt_int(len(sales_orders)), "tone": "blue", "note": f"{len(open_orders)} open in recent pull.", "source": "zoho_inventory"},
+            {"label": "Zoho invoices", "value": fmt_int(len(invoices)), "tone": "blue", "note": f"{len(unpaid_invoices)} unpaid in recent pull; paid total ${paid_total:,.2f}.", "source": "zoho_inventory"},
+        ],
+        "lowStockItems": [
+            {"name": item.get("name", "Unnamed item"), "sku": item.get("sku", ""), "stock": fmt_int(qty(item)), "reorderLevel": fmt_int(reorder_level(item))}
+            for item in low_stock[:10]
+        ],
+        "recentSalesOrders": [
+            {"number": order.get("salesorder_number", ""), "customer": order.get("customer_name", ""), "status": order.get("status", ""), "total": f"${float(order.get('total') or 0):,.2f}"}
+            for order in sales_orders[:8]
+        ],
+        "recentInvoices": [
+            {"number": invoice.get("invoice_number", ""), "customer": invoice.get("customer_name", ""), "status": invoice.get("status", ""), "total": f"${float(invoice.get('total') or 0):,.2f}"}
+            for invoice in invoices[:8]
+        ],
+    }
 
 
 def fmt_int(value: Any) -> str:
@@ -472,17 +597,21 @@ def _ensure_base_sections(data: dict[str, Any]) -> dict[str, Any]:
 
 def build_command_center(data: dict[str, Any]) -> dict[str, Any]:
     analytics = data.get("websiteAnalytics", {})
+    zoho = data.get("zohoInventory", {})
+    zoho_cards = {card.get("label", ""): card for card in zoho.get("scorecards", [])}
     sessions = _sessions_from_analytics(analytics)
     impressions = _metric_from_scorecards(analytics, "Search impressions")
+    orders_card = zoho_cards.get("Zoho sales orders", {}) if zoho.get("status") == "ok" else {}
+    stock_card = zoho_cards.get("Zoho stock on hand", {}) if zoho.get("status") == "ok" else {}
     return {
         "diagnosis": "Maintane made concrete progress today: supplier payment completed, Amazon appeal work moved forward, influencer retouch outreach is running, and live GA4/Search Console access is restored.",
         "scorecards": [
-            {"label": "Revenue", "value": "Pending Shopify API", "note": "Future source required; no fake sales metrics.", "tone": "warn", "source": "future:shopify"},
-            {"label": "Orders", "value": "Pending Shopify API", "note": "Requires Shopify order integration.", "tone": "warn", "source": "future:shopify"},
+            {"label": "Revenue", "value": "Pending Shopify API", "note": "Future source required for DTC revenue; Zoho invoices are tracked separately.", "tone": "warn", "source": "future:shopify"},
+            {"label": "Orders", "value": orders_card.get("value", "Pending Zoho/Shopify API"), "note": orders_card.get("note", "Requires Zoho Inventory or Shopify order integration."), "tone": orders_card.get("tone", "warn"), "source": orders_card.get("source", "future:zoho")},
             {"label": "Sessions", "value": sessions, "note": "Last 30 days from GA4 when available.", "tone": "blue", "source": "ga4"},
             {"label": "Search Impressions", "value": impressions, "note": "Last 30 days from Search Console when available.", "tone": "amber", "source": "search_console"},
-            {"label": "Contribution Profit", "value": "Pending Shopify API", "note": "Calculated after order and channel costs are integrated.", "tone": "warn", "source": "future:shopify"},
-            {"label": "Channel Status", "value": "DTC live; Amazon/TikTok pending", "note": "Based on Maintane brand asset, not sales data.", "tone": "amber", "source": "TomMemory"},
+            {"label": "Inventory", "value": stock_card.get("value", "Pending Zoho API"), "note": stock_card.get("note", "Live stock requires Zoho Inventory API."), "tone": stock_card.get("tone", "warn"), "source": stock_card.get("source", "future:zoho")},
+            {"label": "Channel Status", "value": "DTC live; Amazon/TikTok pending", "note": "Based on Maintane brand asset plus live integrations when available.", "tone": "amber", "source": "TomMemory/Zoho"},
         ],
         "primaryBottleneck": {
             "title": "Amazon review plus creator execution",
@@ -501,6 +630,9 @@ def build_command_center(data: dict[str, Any]) -> dict[str, Any]:
 
 def build_revenue_funnel(data: dict[str, Any]) -> dict[str, Any]:
     analytics = data.get("websiteAnalytics", {})
+    zoho = data.get("zohoInventory", {})
+    zoho_cards = {card.get("label", ""): card for card in zoho.get("scorecards", [])}
+    orders_card = zoho_cards.get("Zoho sales orders", {}) if zoho.get("status") == "ok" else {}
     sessions = _sessions_from_analytics(analytics)
     page_views = "Pending GA4 event mapping"
     for card in analytics.get("scorecards", []):
@@ -515,7 +647,7 @@ def build_revenue_funnel(data: dict[str, Any]) -> dict[str, Any]:
             {"label": "Product / intent page views", "value": page_views, "status": "partial", "source": "ga4", "tone": "blue", "note": "Use explicit product/intent page grouping in future."},
             {"label": "CTA clicks", "value": "Pending GA4 event instrumentation", "status": "pending", "source": "future:ga4_event", "tone": "warn"},
             {"label": "Checkout starts", "value": "Pending Shopify API", "status": "pending", "source": "future:shopify", "tone": "warn"},
-            {"label": "Orders", "value": "Pending Shopify API", "status": "pending", "source": "future:shopify", "tone": "warn"},
+            {"label": "Orders", "value": orders_card.get("value", "Pending Zoho/Shopify API"), "status": "active" if zoho.get("status") == "ok" else "pending", "source": orders_card.get("source", "future:zoho"), "tone": orders_card.get("tone", "warn")},
             {"label": "Repeat/subscription intent", "value": "Pending Klaviyo/subscription source", "status": "pending", "source": "future:klaviyo", "tone": "warn"},
         ],
         "missingInstrumentation": [
@@ -682,6 +814,9 @@ def build_data(vault: Path, output: Path) -> dict[str, Any]:
         "needleValue": "Amazon appeal submitted; influencer retouch sprint running",
         "needleSupport": "Amit payment is complete, the paid-in-full document has been requested, Amazon appeal work moved forward, and Google analytics access is restored. Keep creator outreach moving while waiting on marketplace responses.",
     }
+    data["zohoInventory"] = fetch_zoho_inventory(existing)
+    zoho_cards = {card.get("label", ""): card for card in data["zohoInventory"].get("scorecards", [])}
+    zoho_stock_card = zoho_cards.get("Zoho stock on hand", {})
     data["overviewMetrics"] = [
         {"label": "Launch readiness", "value": f"{min(readiness + 5, 95)}%", "tone": "amber", "note": "DTC live; Amazon appeal submitted; TikTok still gated by product images."},
         {"label": "Active blockers", "value": str(active_blockers), "tone": "red", "note": "Counted from current critical/high TomMemory tasks."},
@@ -698,7 +833,7 @@ def build_data(vault: Path, output: Path) -> dict[str, Any]:
         {"label": "Amazon case", "value": "Submitted", "tone": "amber", "note": "Appeal packet work moved forward; awaiting Amazon response / paid invoice document if requested."},
         {"label": "Invoice", "value": "Paid", "tone": "green", "note": "Remaining Amit payment completed; official paid-in-full document requested from Amit and Allen."},
         {"label": "TikTok Shop", "value": "Draft" if "draft" in parsed["tiktok_shop"].get("Status", "").lower() else parsed["tiktok_shop"].get("Status", "Draft"), "tone": "amber", "note": parsed["tiktok_shop"].get("Needs", "Needs product images before review")},
-        {"label": "Inventory", "value": parsed["inventory"].get("On hand", "250 units").replace(" units", ""), "tone": "blue", "note": "On hand / production per TomMemory"},
+        {"label": "Inventory", "value": zoho_stock_card.get("value", parsed["inventory"].get("On hand", "250 units").replace(" units", "")), "tone": zoho_stock_card.get("tone", "blue"), "note": zoho_stock_card.get("note", "On hand / production per TomMemory")},
     ]
     data["blockers"]["columns"] = [
         {"title": "Waiting", "cards": [
