@@ -20,11 +20,6 @@ const trimDashboardData = (data = {}) => ({
 });
 
 export async function onRequestPost({ request, env }) {
-  const accessKey = request.headers.get('X-Mission-Control-Key') || '';
-  if (!env.MISSION_CONTROL_TOM_KEY || accessKey !== env.MISSION_CONTROL_TOM_KEY) {
-    return json({ error: 'Mission Control Tom access key required.' }, 401);
-  }
-
   if (!env.HERMES_API_BASE || !env.HERMES_API_KEY) {
     return json({
       error: 'Hermes operator bridge is not configured. Set HERMES_API_BASE and HERMES_API_KEY in Cloudflare Pages environment variables.'
