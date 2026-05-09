@@ -164,6 +164,21 @@ class WebsiteAnalyticsTests(unittest.TestCase):
         self.assertIn("X-Hermes-Session-Key", worker)
         self.assertIn("do not send emails", worker)
 
+    def test_index_has_live_zoho_pages_function_overlay(self):
+        html = (ROOT / "index.html").read_text()
+        function_path = ROOT / "functions" / "api" / "zoho-inventory.js"
+        worker = function_path.read_text()
+
+        self.assertIn("/api/zoho-inventory", html)
+        self.assertIn("applyLiveZoho", html)
+        self.assertIn("ZOHO_CLIENT_ID", worker)
+        self.assertIn("ZOHO_CLIENT_SECRET", worker)
+        self.assertIn("ZOHO_REFRESH_TOKEN", worker)
+        self.assertIn("ZOHO_ORGANIZATION_ID", worker)
+        self.assertIn("oauth/v2/token", worker)
+        self.assertIn("/inventory/v1", worker)
+        self.assertIn("onRequestGet", worker)
+
     def test_index_uses_mobile_hamburger_off_canvas_navigation(self):
         html = (ROOT / "index.html").read_text()
         self.assertIn("@media(max-width:860px)", html)
