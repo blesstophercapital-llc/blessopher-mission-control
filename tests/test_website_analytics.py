@@ -105,41 +105,54 @@ class WebsiteAnalyticsTests(unittest.TestCase):
         self.assertEqual(bucket_counts["Build Authority"], 2)
         self.assertEqual(bucket_counts["Brand Defense"], 1)
 
-    def test_index_has_v1_left_nav_and_renders_website_analytics_page(self):
+    def test_index_has_optimized_business_navigation(self):
         html = (ROOT / "index.html").read_text()
         for page_id in [
             "commandCenter",
-            "revenueFunnel",
-            "seoOpportunities",
-            "channelOps",
-            "unitEconomics",
-            "actionQueue",
+            "revenue",
+            "channels",
+            "marketing",
+            "productInventory",
+            "customers",
+            "finance",
+            "tasks",
+            "dataHealth",
+            "tom",
         ]:
-            self.assertIn(f'data-page="{page_id}"', html)
+            self.assertIn(page_id, html)
             self.assertIn(f'id="{page_id}"', html)
 
-        self.assertIn('data-page="websiteAnalytics"', html)
-        self.assertIn("Command Center", html)
-        self.assertIn("Revenue Funnel", html)
-        self.assertIn("SEO Opportunities", html)
-        self.assertIn("Channel Ops", html)
-        self.assertIn("Unit Economics", html)
-        self.assertIn("Action Queue", html)
-        self.assertIn("Website Analytics", html)
-        self.assertIn('id="websiteAnalytics"', html)
+        for label in [
+            "Command Center",
+            "Revenue",
+            "Channels",
+            "Marketing",
+            "Product & Inventory",
+            "Customers",
+            "Finance",
+            "Tasks",
+            "Data Health",
+            "Tom",
+        ]:
+            self.assertIn(label, html)
+
+        self.assertNotIn("'launch'", html.lower())
+        self.assertIn("Marketing includes creators", html)
+        self.assertIn("Product & Inventory combined", html)
+        self.assertIn("No Launch page", html)
         self.assertIn("data.websiteAnalytics", html)
 
     def test_index_uses_mobile_hamburger_off_canvas_navigation(self):
         html = (ROOT / "index.html").read_text()
-        self.assertIn("@media(max-width:1000px)", html)
-        self.assertIn('class="menu-toggle"', html)
+        self.assertIn("@media(max-width:860px)", html)
+        self.assertIn('class="btn menu-toggle"', html)
         self.assertIn('id="mobileMenu"', html)
         self.assertIn('id="menuBackdrop"', html)
         self.assertIn("function toggleMenu()", html)
         self.assertIn("function closeMenu()", html)
-        self.assertIn("transform:translateX(-104%)", html)
-        self.assertIn(".sidebar.open{transform:translateX(0)}", html)
-        self.assertNotIn("@media(max-width:1000px){.sidebar{display:none}", html)
+        self.assertIn("transform:translateX(-105%)", html)
+        self.assertIn(".side.open{transform:translateX(0)}", html)
+        self.assertNotIn(".side{display:none}", html)
         self.assertNotIn("overflow-x:auto", html)
 
 

@@ -2,7 +2,7 @@
   "meta": {
     "title": "Maintane Mission Control",
     "subtitle": "Blessopher Capital operating cockpit",
-    "updatedLabel": "Updated Fri May 8 · 2:38 PM EDT",
+    "updatedLabel": "Updated Fri May 8 · 8:51 PM EDT",
     "source": "~/TomMemory",
     "siteUrl": "https://getmaintane.com",
     "cloudflareNote": "Cloudflare Pages deploys from GitHub main when connected."
@@ -447,7 +447,7 @@
         "Maintane-Content-Strategy.md"
       ]
     ],
-    "sourceNote": "Dashboard content is generated from TomMemory into mission-control.json as of Fri May 8 · 2:38 PM EDT."
+    "sourceNote": "Dashboard content is generated from TomMemory into mission-control.json as of Fri May 8 · 8:51 PM EDT."
   },
   "websiteAnalytics": {
     "updatedLabel": "Pulled Fri May 8 · 2:38 PM EDT",
