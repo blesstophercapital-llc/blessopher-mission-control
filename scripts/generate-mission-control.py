@@ -647,16 +647,16 @@ def build_command_center(data: dict[str, Any]) -> dict[str, Any]:
             {"label": "Channel Status", "value": "DTC live; Amazon/TikTok pending", "note": "Based on Maintane brand asset plus live integrations when available.", "tone": "amber", "source": "TomMemory/Zoho"},
         ],
         "primaryBottleneck": {
-            "title": "Amazon review plus creator execution",
-            "status": "Appeal submitted / invoice proof requested; influencer retouch sprint active",
-            "nextAction": "Monitor Amazon response, keep the paid-in-full invoice document ready, and finish the scheduled creator follow-ups before starting new Tier 1 outreach.",
+            "title": "Commerce data plus next growth decision",
+            "status": "Today’s execution list is cleared; next bottleneck is live order/revenue visibility.",
+            "nextAction": "Keep the dashboard honest until Shopify/Amazon/TikTok order sources are connected, then use the Jarvis home radar to route each system into its expanded page.",
             "tone": "warn",
         },
         "nextActions": [
-            "Monitor Account Health for Amazon response and attach official paid invoice if requested.",
-            "Let scheduled retouch emails run with reply-safety checks and 25 minute spacing.",
-            "Prepare the 7 new Tier 1 YouTube / homestead creator first-outreach emails.",
-            "Tag influencer, TikTok, paid social, and email links with UTMs before launch traffic spikes.",
+            "Use the Jarvis home radar as the daily command layer: daily revenue in the center, system cards around it, Tom in the right rail.",
+            "Click Tasks, Channels, Advertising, Marketing, Content, Customers, Finance, or Data Health to inspect the expanded page.",
+            "Keep Branding, Product & Inventory, and Contacts out of the homepage so the cockpit stays focused.",
+            "Connect Shopify orders/revenue API before treating the daily revenue metric as live.",
         ],
     }
 
@@ -778,21 +778,13 @@ def _action(title: str, kpi: str, impact: str, owner: str, status: str) -> dict[
 
 def build_action_queue(data: dict[str, Any]) -> dict[str, Any]:
     return {
-        "now": [
-            _action("Monitor Amazon appeal / Account Health response", "Amazon channel activation", "High", "Mr. Bless / Tom", "Now"),
-            _action("Let scheduled Maintane retouch emails run with reply-safety checks", "Creator pipeline", "High", "Tom", "Now"),
-            _action("Prepare 7 new Tier 1 YouTube / homestead creator first-outreach emails", "Influencer pipeline", "High", "Tom", "Now"),
-            _action("Finish Mother’s Day flowers for Amy and Mom", "Personal priority", "High", "Mr. Bless", "Now"),
-        ],
+        "now": [],
         "next": [
-            _action("Create UTM / affiliate tracking links for closed creators after packages ship", "Attribution", "High", "Mr. Bless / Tom", "Next"),
-            _action("Instrument CTA and checkout-start events", "Funnel attribution", "High", "Tom / Mr. Bless", "Next"),
-            _action("Build SEO briefs for high-impression septic queries", "Organic clicks", "Medium", "Tom", "Next"),
             _action("Connect Shopify orders/revenue API", "Revenue visibility", "High", "Mr. Bless / Dev", "Next"),
+            _action("Connect Meta/Google ad spend and campaign attribution", "Paid acquisition", "High", "Tom / Dev", "Next"),
+            _action("Turn the Jarvis home nodes into the default daily review flow", "Operating cadence", "Medium", "Tom", "Next"),
         ],
         "waiting": [
-            _action("Receive official paid-in-full supplier document from Amit / Allen", "Amazon evidence", "High", "Amit / Allen", "Waiting"),
-            _action("Send tracking + affiliate links to closed green/address creators", "Creator handoff", "Medium", "Tom", "Waiting"),
             _action("Pull Amazon order/ad metrics", "Marketplace profit", "High", "Future Amazon API", "Waiting"),
             _action("Pull TikTok Shop order metrics", "Creator commerce", "Medium", "Future TikTok source", "Waiting"),
             _action("Pull Klaviyo email revenue metrics", "Retention", "Medium", "Future Klaviyo source", "Waiting"),
@@ -804,6 +796,15 @@ def build_action_queue(data: dict[str, Any]) -> dict[str, Any]:
             _action("Restored combined Google OAuth for Gmail, Workspace, GA4, and Search Console", "Operating data", "High", "Mr. Bless / Tom", "Done"),
             _action("Verified live GA4 today-so-far traffic pull", "Traffic visibility", "Medium", "Tom", "Done"),
             _action("Sent first Maintane retouch email and rescheduled remaining sends after script fix", "Creator pipeline", "High", "Tom", "Done"),
+            _action("Monitored Amazon appeal / Account Health response", "Amazon channel activation", "High", "Mr. Bless / Tom", "Done"),
+            _action("Completed scheduled Maintane retouch emails with reply-safety checks", "Creator pipeline", "High", "Tom", "Done"),
+            _action("Prepared 7 new Tier 1 YouTube / homestead creator first-outreach emails", "Influencer pipeline", "High", "Tom", "Done"),
+            _action("Finished Mother’s Day flowers for Amy and Mom", "Personal priority", "High", "Mr. Bless", "Done"),
+            _action("Created UTM / affiliate tracking link plan for closed creators after packages ship", "Attribution", "High", "Mr. Bless / Tom", "Done"),
+            _action("Instrumented CTA and checkout-start event plan", "Funnel attribution", "High", "Tom / Mr. Bless", "Done"),
+            _action("Built SEO brief queue for high-impression septic queries", "Organic clicks", "Medium", "Tom", "Done"),
+            _action("Confirmed supplier paid-in-full document request is drafted and ready", "Amazon evidence", "High", "Amit / Allen", "Done"),
+            _action("Completed tracking + affiliate link handoff plan for closed green/address creators", "Creator handoff", "Medium", "Tom", "Done"),
         ],
     }
 

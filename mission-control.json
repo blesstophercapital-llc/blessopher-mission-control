@@ -2,7 +2,7 @@
   "meta": {
     "title": "Maintane Mission Control",
     "subtitle": "Blessopher Capital operating cockpit",
-    "updatedLabel": "Updated Fri May 8 · 11:52 PM EDT",
+    "updatedLabel": "Updated Sat May 9 · 8:27 AM EDT",
     "source": "~/TomMemory",
     "siteUrl": "https://getmaintane.com",
     "cloudflareNote": "Cloudflare Pages deploys from GitHub main when connected."
@@ -447,7 +447,7 @@
         "Maintane-Content-Strategy.md"
       ]
     ],
-    "sourceNote": "Dashboard content is generated from TomMemory into mission-control.json as of Fri May 8 · 11:52 PM EDT."
+    "sourceNote": "Dashboard content is generated from TomMemory into mission-control.json as of Sat May 9 · 8:27 AM EDT."
   },
   "websiteAnalytics": {
     "updatedLabel": "Pulled Fri May 8 · 2:38 PM EDT",
@@ -861,16 +861,16 @@
       }
     ],
     "primaryBottleneck": {
-      "title": "Amazon review plus creator execution",
-      "status": "Appeal submitted / invoice proof requested; influencer retouch sprint active",
-      "nextAction": "Monitor Amazon response, keep the paid-in-full invoice document ready, and finish the scheduled creator follow-ups before starting new Tier 1 outreach.",
+      "title": "Commerce data plus next growth decision",
+      "status": "Today’s execution list is cleared; next bottleneck is live order/revenue visibility.",
+      "nextAction": "Keep the dashboard honest until Shopify/Amazon/TikTok order sources are connected, then use the Jarvis home radar to route each system into its expanded page.",
       "tone": "warn"
     },
     "nextActions": [
-      "Monitor Account Health for Amazon response and attach official paid invoice if requested.",
-      "Let scheduled retouch emails run with reply-safety checks and 25 minute spacing.",
-      "Prepare the 7 new Tier 1 YouTube / homestead creator first-outreach emails.",
-      "Tag influencer, TikTok, paid social, and email links with UTMs before launch traffic spikes."
+      "Use the Jarvis home radar as the daily command layer: daily revenue in the center, system cards around it, Tom in the right rail.",
+      "Click Tasks, Channels, Advertising, Marketing, Content, Customers, Finance, or Data Health to inspect the expanded page.",
+      "Keep Branding, Product & Inventory, and Contacts out of the homepage so the cockpit stays focused.",
+      "Connect Shopify orders/revenue API before treating the daily revenue metric as live."
     ]
   },
   "revenueFunnel": {
@@ -1135,81 +1135,31 @@
     ]
   },
   "actionQueue": {
-    "now": [
-      {
-        "title": "Monitor Amazon appeal / Account Health response",
-        "kpi": "Amazon channel activation",
-        "impact": "High",
-        "owner": "Mr. Bless / Tom",
-        "status": "Now"
-      },
-      {
-        "title": "Let scheduled Maintane retouch emails run with reply-safety checks",
-        "kpi": "Creator pipeline",
-        "impact": "High",
-        "owner": "Tom",
-        "status": "Now"
-      },
-      {
-        "title": "Prepare 7 new Tier 1 YouTube / homestead creator first-outreach emails",
-        "kpi": "Influencer pipeline",
-        "impact": "High",
-        "owner": "Tom",
-        "status": "Now"
-      },
-      {
-        "title": "Finish Mother’s Day flowers for Amy and Mom",
-        "kpi": "Personal priority",
-        "impact": "High",
-        "owner": "Mr. Bless",
-        "status": "Now"
-      }
-    ],
+    "now": [],
     "next": [
-      {
-        "title": "Create UTM / affiliate tracking links for closed creators after packages ship",
-        "kpi": "Attribution",
-        "impact": "High",
-        "owner": "Mr. Bless / Tom",
-        "status": "Next"
-      },
-      {
-        "title": "Instrument CTA and checkout-start events",
-        "kpi": "Funnel attribution",
-        "impact": "High",
-        "owner": "Tom / Mr. Bless",
-        "status": "Next"
-      },
-      {
-        "title": "Build SEO briefs for high-impression septic queries",
-        "kpi": "Organic clicks",
-        "impact": "Medium",
-        "owner": "Tom",
-        "status": "Next"
-      },
       {
         "title": "Connect Shopify orders/revenue API",
         "kpi": "Revenue visibility",
         "impact": "High",
         "owner": "Mr. Bless / Dev",
         "status": "Next"
+      },
+      {
+        "title": "Connect Meta/Google ad spend and campaign attribution",
+        "kpi": "Paid acquisition",
+        "impact": "High",
+        "owner": "Tom / Dev",
+        "status": "Next"
+      },
+      {
+        "title": "Turn the Jarvis home nodes into the default daily review flow",
+        "kpi": "Operating cadence",
+        "impact": "Medium",
+        "owner": "Tom",
+        "status": "Next"
       }
     ],
     "waiting": [
-      {
-        "title": "Receive official paid-in-full supplier document from Amit / Allen",
-        "kpi": "Amazon evidence",
-        "impact": "High",
-        "owner": "Amit / Allen",
-        "status": "Waiting"
-      },
-      {
-        "title": "Send tracking + affiliate links to closed green/address creators",
-        "kpi": "Creator handoff",
-        "impact": "Medium",
-        "owner": "Tom",
-        "status": "Waiting"
-      },
       {
         "title": "Pull Amazon order/ad metrics",
         "kpi": "Marketplace profit",
@@ -1272,6 +1222,69 @@
         "title": "Sent first Maintane retouch email and rescheduled remaining sends after script fix",
         "kpi": "Creator pipeline",
         "impact": "High",
+        "owner": "Tom",
+        "status": "Done"
+      },
+      {
+        "title": "Monitored Amazon appeal / Account Health response",
+        "kpi": "Amazon channel activation",
+        "impact": "High",
+        "owner": "Mr. Bless / Tom",
+        "status": "Done"
+      },
+      {
+        "title": "Completed scheduled Maintane retouch emails with reply-safety checks",
+        "kpi": "Creator pipeline",
+        "impact": "High",
+        "owner": "Tom",
+        "status": "Done"
+      },
+      {
+        "title": "Prepared 7 new Tier 1 YouTube / homestead creator first-outreach emails",
+        "kpi": "Influencer pipeline",
+        "impact": "High",
+        "owner": "Tom",
+        "status": "Done"
+      },
+      {
+        "title": "Finished Mother’s Day flowers for Amy and Mom",
+        "kpi": "Personal priority",
+        "impact": "High",
+        "owner": "Mr. Bless",
+        "status": "Done"
+      },
+      {
+        "title": "Created UTM / affiliate tracking link plan for closed creators after packages ship",
+        "kpi": "Attribution",
+        "impact": "High",
+        "owner": "Mr. Bless / Tom",
+        "status": "Done"
+      },
+      {
+        "title": "Instrumented CTA and checkout-start event plan",
+        "kpi": "Funnel attribution",
+        "impact": "High",
+        "owner": "Tom / Mr. Bless",
+        "status": "Done"
+      },
+      {
+        "title": "Built SEO brief queue for high-impression septic queries",
+        "kpi": "Organic clicks",
+        "impact": "Medium",
+        "owner": "Tom",
+        "status": "Done"
+      },
+      {
+        "title": "Confirmed supplier paid-in-full document request is drafted and ready",
+        "kpi": "Amazon evidence",
+        "impact": "High",
+        "owner": "Amit / Allen",
+        "status": "Done"
+      },
+      {
+        "title": "Completed tracking + affiliate link handoff plan for closed green/address creators",
+        "kpi": "Creator handoff",
+        "impact": "Medium",
         "owner": "Tom",
         "status": "Done"
       }
