@@ -34,7 +34,7 @@
     <div class="prompt" id="tomPrompts"></div>
     <h2 style="margin-top:22px">Tom Operator Console</h2>
     <div class="chat-status" id="tomStatus">Hermes operator bridge is live. No browser access key required. API keys stay server-side.</div>
-    <div class="chat-log" id="tomChatLog"><div class="chat-msg system">Tom is ready. Ask about the dashboard or request an operator action. Sensitive actions still require explicit confirmation.</div></div>
+    <div class="chat-log" id="tomChatLog"></div>
     <textarea class="chat-input" id="tomPrompt" placeholder="Ask Tom what needs attention, draft a task plan, or route an operator action..."></textarea>
     <div class="chat-actions"><button class="btn primary" onclick="sendTom()">Send to Hermes</button><button class="btn" onclick="document.getElementById('tomPrompt').value=''">Clear</button><button class="btn" onclick="clearTomChat()">Clear chat</button></div>
     <div class="source">Backend: /api/tom-chat → Hermes API Server. API keys stay server-side.</div>
@@ -93,7 +93,7 @@ function closeMenu(){document.getElementById('mobileMenu')?.classList.remove('op
 function appendTom(role,text){const log=document.getElementById('tomChatLog');const div=document.createElement('div');div.className=`chat-msg ${role}`;div.textContent=text;log.appendChild(div);log.scrollTop=log.scrollHeight}
 function askTom(prompt){const box=document.getElementById('tomPrompt');if(prompt)box.value=prompt;document.getElementById('rightRail')?.scrollIntoView({block:'nearest'});setTimeout(()=>box.focus(),30)}
 function closeTom(){document.getElementById('tomPrompt')?.blur()}
-function clearTomChat(){document.getElementById('tomChatLog').innerHTML='<div class="chat-msg system">Chat cleared. Tom is ready.</div>'}
+function clearTomChat(){document.getElementById('tomChatLog').innerHTML=''}
 async function sendTom(){const box=document.getElementById('tomPrompt');const msg=box.value.trim();if(!msg){return}appendTom('user',msg);box.value='';appendTom('system','Routing to Hermes...');try{const res=await fetch('/api/tom-chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg,missionControlData:missionData,clientId:localStorage.getItem('missionControlClientId')||(localStorage.setItem('missionControlClientId',crypto.randomUUID()),localStorage.getItem('missionControlClientId'))})});const data=await res.json().catch(()=>({error:'Invalid JSON response'}));document.querySelectorAll('#tomChatLog .chat-msg.system').forEach((el,i,all)=>{if(i===all.length-1&&el.textContent==='Routing to Hermes...')el.remove()});if(!res.ok){appendTom('system',data.error||`Hermes bridge error ${res.status}`);return}appendTom('tom',data.reply||'No reply returned.')}catch(e){document.querySelectorAll('#tomChatLog .chat-msg.system').forEach((el,i,all)=>{if(i===all.length-1&&el.textContent==='Routing to Hermes...')el.remove()});appendTom('system',`Hermes bridge unavailable: ${e.message}`)}}
 fetch('mission-control.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error(`${r.status} ${r.statusText}`);return r.json()}).then(render).catch(e=>{document.getElementById('app').innerHTML=`<div class="panel glass"><span class="chip">Data load failed</span><h1>Mission data unavailable.</h1><p class="muted">${esc(e.message)}</p></div>`;console.error(e)});
 </script>
