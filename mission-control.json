@@ -2,8 +2,14 @@
   "meta": {
     "title": "Maintane Mission Control",
     "subtitle": "Blesstopher Capital operating cockpit",
-    "updatedLabel": "Updated Sat May 9 · 8:27 AM EDT",
-    "source": "~/TomMemory",
+    "updatedLabel": "Updated Sun May 10 · 2:54 PM EDT",
+    "source": "/Users/christopherbless/Documents/TomMemory-2.0",
+    "sourceNotes": [
+      "Projects/Maintane/Maintane Overview.md",
+      "Projects/Maintane/Maintane Current Status.md",
+      "Tasks/Active Tasks.md",
+      "Projects/Content-Strategy/Maintane Content System.md"
+    ],
     "siteUrl": "https://getmaintane.com",
     "cloudflareNote": "Cloudflare Pages deploys from GitHub main when connected."
   },
@@ -17,13 +23,13 @@
   "overviewMetrics": [
     {
       "label": "Launch readiness",
-      "value": "75%",
+      "value": "90%",
       "tone": "amber",
       "note": "DTC live; Amazon appeal submitted; TikTok still gated by product images."
     },
     {
       "label": "Active blockers",
-      "value": "4",
+      "value": "3",
       "tone": "red",
       "note": "Counted from current critical/high TomMemory tasks."
     },
@@ -121,7 +127,7 @@
         "label": "TikTok Shop",
         "value": "Draft",
         "tone": "amber",
-        "note": "Product images before submitting for review"
+        "note": "Needs product images before review"
       },
       {
         "label": "Inventory",
@@ -195,7 +201,7 @@
         ],
         [
           "Apps",
-          "Klaviyo, Judge.me, Shopify Collabs"
+          "Klaviyo · Judge.me · Collabs"
         ]
       ]
     },
@@ -230,16 +236,16 @@
       "rows": [
         [
           "Status",
-          "Approved, listing drafted, saved as draft",
+          "Approved · draft",
           "warn"
         ],
         [
           "Category",
-          "Home Supplies > Home Care Supplies > Household Cleaners > Drain Openers"
+          "Home Supplies"
         ],
         [
           "Affiliate",
-          "15% commission, to be enabled post-launch"
+          "15% post-launch"
         ],
         [
           "Stock",
@@ -247,7 +253,7 @@
         ],
         [
           "Need",
-          "Product images before submitting for review"
+          "Product images"
         ]
       ]
     }
@@ -318,13 +324,13 @@
         "label": "TikTok",
         "value": "5.4K",
         "tone": "green",
-        "note": "28-day views · 80.4% For You, 16.2% Search"
+        "note": "28-day views · For You"
       },
       {
         "label": "Instagram best post",
         "value": "1,092",
         "tone": "blue",
-        "note": "\"4 Warning Signs\" — 1,092 views"
+        "note": "“4 Warning Signs”"
       },
       {
         "label": "Cadence",
@@ -447,10 +453,10 @@
         "Maintane-Content-Strategy.md"
       ]
     ],
-    "sourceNote": "Dashboard content is generated from TomMemory into mission-control.json as of Sat May 9 · 8:27 AM EDT."
+    "sourceNote": "Dashboard content is generated from TomMemory into mission-control.json as of Sun May 10 · 2:54 PM EDT."
   },
   "websiteAnalytics": {
-    "updatedLabel": "Pulled Fri May 8 · 2:38 PM EDT",
+    "updatedLabel": "Pulled Sun May 10 · 2:54 PM EDT",
     "ga4": {
       "propertyId": "532192988",
       "propertyName": "Maintane",
@@ -458,26 +464,26 @@
     },
     "searchConsole": {
       "siteUrl": "sc-domain:getmaintane.com",
-      "period": "2026-04-08 → 2026-05-08"
+      "period": "2026-04-10 → 2026-05-10"
     },
     "scorecards": [
       {
         "label": "GA4 active users",
-        "value": "275",
+        "value": "294",
         "tone": "blue",
-        "note": "389 sessions · 1,934 page views"
+        "note": "422 sessions · 2,062 page views"
       },
       {
         "label": "GA4 events",
-        "value": "6,733",
+        "value": "7,121",
         "tone": "green",
         "note": "Includes CTA impressions, nav clicks, scrolls, engagement."
       },
       {
         "label": "Search impressions",
-        "value": "1,593",
+        "value": "2,022",
         "tone": "amber",
-        "note": "Avg position 36.5 · CTR 0.13%"
+        "note": "Avg position 41.8 · CTR 0.10%"
       },
       {
         "label": "Search clicks",
@@ -494,7 +500,7 @@
       ],
       [
         "Today so far",
-        "3 active users / 4 sessions / 2 page views / 17 events",
+        "9 active users / 9 sessions / 29 page views / 102 events",
         "ok"
       ],
       [
@@ -504,7 +510,7 @@
       ],
       [
         "SEO readout",
-        "1,593 impressions / 2 clicks / rank 36.5",
+        "2,022 impressions / 2 clicks / rank 41.8",
         "warn"
       ],
       [
@@ -522,13 +528,18 @@
     "gaTopPages": [
       [
         "/",
-        "954",
-        "230"
+        "991",
+        "236"
       ],
       [
         "/blog/",
-        "233",
+        "232",
         "14"
+      ],
+      [
+        "/waitlist/",
+        "124",
+        "49"
       ],
       [
         "/how-it-works.html",
@@ -537,18 +548,13 @@
       ],
       [
         "/dosing-guide.html",
-        "97",
-        "5"
+        "100",
+        "6"
       ],
       [
         "/blog/dosing-guide.html",
-        "89",
+        "88",
         "14"
-      ],
-      [
-        "/waitlist/",
-        "43",
-        "37"
       ],
       [
         "/products.html",
@@ -556,72 +562,72 @@
         "3"
       ],
       [
-        "/blog/what-kills-septic-tank-bacteria.html",
-        "32",
-        "6"
+        "/septic-treatment.html",
+        "34",
+        "3"
       ]
     ],
     "gaChannels": [
       [
         "Direct",
-        "207",
-        "152"
+        "218",
+        "158"
       ],
       [
         "Organic Social",
-        "70",
-        "69"
+        "73",
+        "71"
       ],
       [
         "Paid Social",
-        "52",
-        "49"
+        "64",
+        "61"
       ],
       [
         "Unassigned",
-        "47",
-        "2"
+        "48",
+        "4"
       ],
       [
         "Organic Search",
-        "9",
+        "10",
         "4"
+      ],
+      [
+        "Referral",
+        "9",
+        "1"
       ],
       [
         "Paid Search",
         "2",
         "2"
-      ],
-      [
-        "Referral",
-        "2",
-        "1"
       ]
     ],
     "gaEvents": [
       [
         "page_view",
-        "1934"
+        "2062"
       ],
       [
         "checkout_cta_impression",
-        "1506"
+        "1540"
       ],
       [
         "user_engagement",
-        "1199"
+        "1244"
       ],
       [
         "scroll",
-        "555"
+        "626"
       ],
       [
         "session_start",
-        "388"
+        "422"
       ],
       [
         "first_visit",
-        "274"
+        "292"
       ],
       [
         "nav_click",
@@ -629,16 +635,16 @@
       ],
       [
         "popup_shown",
-        "138"
+        "165"
       ]
     ],
     "gscTopQueries": [
       [
         "maintane",
         "1",
-        "506",
-        "0.20%",
-        "4.8"
+        "447",
+        "0.22%",
+        "4.7"
       ],
       [
         "a bacteria living in an underground septic tank",
@@ -660,6 +666,13 @@
         "1",
         "0.00%",
         "62.0"
+      ],
+      [
+        "average cost of septic tank cleaning",
+        "0",
+        "2",
+        "0.00%",
+        "68.0"
       ],
       [
         "average cost to clean septic tank",
@@ -709,64 +722,57 @@
         "33",
         "0.00%",
         "62.9"
-      ],
-      [
-        "bacteria septic",
-        "0",
-        "1",
-        "0.00%",
-        "67.0"
       ]
     ],
     "gscTopPages": [
       [
         "https://getmaintane.com/",
         "2",
-        "538",
-        "0.37%",
-        "4.3"
+        "524",
+        "0.38%",
+        "4.2"
       ],
       [
         "http://getmaintane.com/",
         "0",
-        "48",
+        "6",
         "0.00%",
-        "7.1"
+        "8.5"
       ],
       [
         "https://getmaintane.com/blog/",
         "0",
-        "10",
+        "11",
         "0.00%",
-        "4.3"
+        "4.1"
       ],
       [
         "https://getmaintane.com/blog/best-laundry-detergent-for-septic-systems.html",
         "0",
-        "23",
+        "39",
         "0.00%",
-        "36.7"
+        "40.5"
       ],
       [
         "https://getmaintane.com/blog/best-septic-tank-treatment-for-older-homes.html",
         "0",
-        "5",
+        "12",
         "0.00%",
-        "6.8"
+        "11.9"
       ],
       [
         "https://getmaintane.com/blog/best-septic-treatment-for-monthly-maintenance.html",
         "0",
-        "8",
+        "9",
         "0.00%",
-        "25.2"
+        "26.7"
       ],
       [
         "https://getmaintane.com/blog/best-toilet-paper-for-septic-tanks.html",
         "0",
-        "2",
+        "21",
         "0.00%",
-        "48.5"
+        "39.7"
       ],
       [
         "https://getmaintane.com/blog/dosing-guide.html",
@@ -785,32 +791,32 @@
       [
         "https://getmaintane.com/blog/how-often-septic-treatment.html",
         "0",
-        "81",
+        "93",
         "0.00%",
-        "31.9"
+        "29.5"
       ]
     ],
     "devices": [
       [
         "DESKTOP",
         "1",
-        "1,091",
-        "0.09%",
-        "40.5"
+        "1,342",
+        "0.07%",
+        "44.4"
       ],
       [
         "MOBILE",
         "1",
-        "499",
-        "0.20%",
-        "28.1"
+        "676",
+        "0.15%",
+        "36.8"
       ],
       [
         "TABLET",
         "0",
-        "3",
+        "4",
         "0.00%",
-        "8.3"
+        "9.2"
       ]
     ]
   },
@@ -833,14 +839,14 @@
       },
       {
         "label": "Sessions",
-        "value": "389",
+        "value": "422",
         "note": "Last 30 days from GA4 when available.",
         "tone": "blue",
         "source": "ga4"
       },
       {
         "label": "Search Impressions",
-        "value": "1,593",
+        "value": "2,022",
         "note": "Last 30 days from Search Console when available.",
         "tone": "amber",
         "source": "search_console"
@@ -878,14 +884,14 @@
     "stages": [
       {
         "label": "Sessions",
-        "value": "389",
+        "value": "422",
         "status": "active",
         "source": "ga4",
         "tone": "blue"
       },
       {
         "label": "Product / intent page views",
-        "value": "1,934 page views",
+        "value": "2,062 page views",
         "status": "partial",
         "source": "ga4",
         "tone": "blue",
@@ -930,7 +936,7 @@
     "scorecards": [
       {
         "label": "Search impressions",
-        "value": "1,593",
+        "value": "2,022",
         "tone": "amber",
         "source": "search_console"
       },
@@ -950,10 +956,10 @@
     "opportunities": [
       {
         "query": "maintane",
-        "impressions": "506",
+        "impressions": "447",
         "clicks": "1",
-        "ctr": "0.20%",
-        "position": "4.8",
+        "ctr": "0.22%",
+        "position": "4.7",
         "bucket": "Brand Defense",
         "recommendedAction": "Defend branded title/snippet.",
         "source": "search_console"
@@ -989,6 +995,16 @@
         "source": "search_console"
       },
       {
+        "query": "average cost of septic tank cleaning",
+        "impressions": "2",
+        "clicks": "0",
+        "ctr": "0.00%",
+        "position": "68.0",
+        "bucket": "Long Shot",
+        "recommendedAction": "Refresh or build content targeting this query cluster.",
+        "source": "search_console"
+      },
+      {
         "query": "average cost to clean septic tank",
         "impressions": "1",
         "clicks": "0",
@@ -1014,16 +1030,6 @@
         "clicks": "0",
         "ctr": "0.00%",
         "position": "87.0",
-        "bucket": "Long Shot",
-        "recommendedAction": "Refresh or build content targeting this query cluster.",
-        "source": "search_console"
-      },
-      {
-        "query": "bacteria for septic tank treatment",
-        "impressions": "1",
-        "clicks": "0",
-        "ctr": "0.00%",
-        "position": "94.0",
         "bucket": "Long Shot",
         "recommendedAction": "Refresh or build content targeting this query cluster.",
         "source": "search_console"

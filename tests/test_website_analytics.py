@@ -4,6 +4,7 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+VAULT = Path("/Users/christopherbless/Documents/TomMemory-2.0")
 
 
 def load_generator():
@@ -19,7 +20,7 @@ def load_generator():
 class WebsiteAnalyticsTests(unittest.TestCase):
     def test_generated_data_contains_actionable_website_analytics_section(self):
         generator = load_generator()
-        data = generator.build_data(Path("/Users/christopherbless/TomMemory"), ROOT / "mission-control.json")
+        data = generator.build_data(VAULT, ROOT / "mission-control.json")
 
         analytics = data["websiteAnalytics"]
         self.assertEqual(analytics["ga4"]["propertyId"], "532192988")
@@ -30,7 +31,7 @@ class WebsiteAnalyticsTests(unittest.TestCase):
 
     def test_generated_data_contains_v1_operating_sections(self):
         generator = load_generator()
-        data = generator.build_data(Path("/Users/christopherbless/TomMemory"), ROOT / "mission-control.json")
+        data = generator.build_data(VAULT, ROOT / "mission-control.json")
 
         for key in [
             "commandCenter",
@@ -52,7 +53,7 @@ class WebsiteAnalyticsTests(unittest.TestCase):
 
     def test_v1_sections_have_required_fields_and_honest_pending_placeholders(self):
         generator = load_generator()
-        data = generator.build_data(Path("/Users/christopherbless/TomMemory"), ROOT / "mission-control.json")
+        data = generator.build_data(VAULT, ROOT / "mission-control.json")
 
         command_center = data["commandCenter"]
         self.assertTrue({"diagnosis", "scorecards", "primaryBottleneck", "nextActions"}.issubset(command_center))
@@ -84,7 +85,7 @@ class WebsiteAnalyticsTests(unittest.TestCase):
         generator = load_generator()
         with tempfile.TemporaryDirectory() as tmpdir:
             fresh_output = Path(tmpdir) / "mission-control-fresh.json"
-            data = generator.build_data(Path("/Users/christopherbless/TomMemory"), fresh_output)
+            data = generator.build_data(VAULT, fresh_output)
 
         for key in ["blockers", "influencers", "content", "finance", "tom", "commandCenter", "revenueFunnel", "seoOpportunities", "actionQueue"]:
             self.assertIn(key, data)

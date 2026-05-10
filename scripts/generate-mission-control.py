@@ -18,7 +18,7 @@ from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_VAULT = Path(os.environ.get("TOMMEMORY_PATH", "/Users/christopherbless/TomMemory")).expanduser()
+DEFAULT_VAULT = Path(os.environ.get("TOMMEMORY_PATH", "/Users/christopherbless/Documents/TomMemory-2.0")).expanduser()
 DEFAULT_OUTPUT = REPO_ROOT / "mission-control.json"
 
 TASK_RE = re.compile(
@@ -34,6 +34,18 @@ def read(path: Path) -> str:
     if not path.exists():
         raise FileNotFoundError(f"Required TomMemory note missing: {path}")
     return path.read_text(encoding="utf-8")
+
+
+def read_first(vault: Path, *relative_paths: str) -> tuple[Path, str]:
+    """Read the first existing vault note from current or legacy layouts."""
+    checked: list[Path] = []
+    for relative_path in relative_paths:
+        path = vault / relative_path
+        checked.append(path)
+        if path.exists():
+            return path, path.read_text(encoding="utf-8")
+    checked_list = "\n".join(f"- {path}" for path in checked)
+    raise FileNotFoundError(f"Required TomMemory note missing. Checked:\n{checked_list}")
 
 
 def first(pattern: str, text: str, default: str = "") -> str:
@@ -810,13 +822,25 @@ def build_action_queue(data: dict[str, Any]) -> dict[str, Any]:
 
 
 def build_data(vault: Path, output: Path) -> dict[str, Any]:
-    asset_path = vault / "Maintane" / "Maintane-brand-asset 4-19.md"
-    tasks_path = vault / "Tasks.md"
-    content_path = vault / "Content-Strategy" / "Maintane-Content-Strategy.md"
+    overview_path, overview_md = read_first(
+        vault,
+        "Projects/Maintane/Maintane Overview.md",
+        "Maintane/Maintane-brand-asset 4-19.md",
+    )
+    status_path, status_md = read_first(
+        vault,
+        "Projects/Maintane/Maintane Current Status.md",
+        "Maintane/Maintane-current-status.md",
+        "Maintane/Maintane-brand-asset 4-19.md",
+    )
+    tasks_path, tasks_md = read_first(vault, "Tasks/Active Tasks.md", "Tasks.md")
+    content_path, content_md = read_first(
+        vault,
+        "Projects/Content-Strategy/Maintane Content System.md",
+        "Content-Strategy/Maintane-Content-Strategy.md",
+    )
 
-    asset_md = read(asset_path)
-    tasks_md = read(tasks_path)
-    content_md = read(content_path)
+    asset_md = f"{overview_md}\n\n{status_md}\n\n{content_md}"
     existing = load_existing(output)
     parsed = parse_brand_asset(asset_md)
     tasks = parse_tasks(tasks_md)
@@ -837,7 +861,13 @@ def build_data(vault: Path, output: Path) -> dict[str, Any]:
         "title": "Maintane Mission Control",
         "subtitle": "Blesstopher Capital operating cockpit",
         "updatedLabel": f"Updated {now}",
-        "source": "~/TomMemory",
+        "source": str(vault),
+        "sourceNotes": [
+            str(overview_path.relative_to(vault)),
+            str(status_path.relative_to(vault)),
+            str(tasks_path.relative_to(vault)),
+            str(content_path.relative_to(vault)),
+        ],
         "siteUrl": "https://getmaintane.com",
         "cloudflareNote": "Cloudflare Pages deploys from GitHub main when connected.",
     }

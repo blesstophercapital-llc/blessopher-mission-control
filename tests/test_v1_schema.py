@@ -3,6 +3,7 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+VAULT = Path("/Users/christopherbless/Documents/TomMemory-2.0")
 
 
 def load_generator():
@@ -19,7 +20,7 @@ class V1SchemaTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.generator = load_generator()
-        cls.data = cls.generator.build_data(Path("/Users/christopherbless/TomMemory"), ROOT / "mission-control.json")
+        cls.data = cls.generator.build_data(VAULT, ROOT / "mission-control.json")
 
     def test_command_center_schema(self):
         section = self.data["commandCenter"]
@@ -60,6 +61,13 @@ class V1SchemaTests(unittest.TestCase):
             self.assertIn(key, section)
         self.assertIn("$39.99", section["price"])
         self.assertIn("$6.49", section["cogs"])
+
+    def test_generator_uses_current_tommemory_vault(self):
+        self.assertEqual(self.generator.DEFAULT_VAULT, VAULT)
+        self.assertEqual(self.data["meta"]["source"], str(VAULT))
+        self.assertIn("Projects/Maintane/Maintane Overview.md", self.data["meta"]["sourceNotes"])
+        self.assertIn("Projects/Maintane/Maintane Current Status.md", self.data["meta"]["sourceNotes"])
+        self.assertIn("Tasks/Active Tasks.md", self.data["meta"]["sourceNotes"])
 
     def test_action_queue_schema(self):
         section = self.data["actionQueue"]
