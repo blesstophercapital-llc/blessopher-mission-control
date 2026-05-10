@@ -835,7 +835,7 @@ def build_data(vault: Path, output: Path) -> dict[str, Any]:
     data = _ensure_base_sections(existing or {})
     data["meta"] = {
         "title": "Maintane Mission Control",
-        "subtitle": "Blessopher Capital operating cockpit",
+        "subtitle": "Blesstopher Capital operating cockpit",
         "updatedLabel": f"Updated {now}",
         "source": "~/TomMemory",
         "siteUrl": "https://getmaintane.com",

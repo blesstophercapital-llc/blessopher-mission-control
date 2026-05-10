@@ -1,6 +1,6 @@
 # Maintane Mission Control
 
-Static Cloudflare Pages dashboard for Blessopher Capital / Maintane.
+Static Cloudflare Pages dashboard for Blesstopher Capital / Maintane.
 
 ## Architecture
 
